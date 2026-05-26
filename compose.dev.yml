@@ -43,7 +43,9 @@ services:
       /bin/sh -c "
       mc alias set local http://minio:9000 minioadmin minioadmin &&
       (mc mb local/blog || true) &&
-      mc anonymous set download local/blog;
+      mc anonymous set download local/blog &&
+      mc admin config set local api cors_allow_origin='*' &&
+      mc admin service restart local;
       "
     restart: "no"
 
