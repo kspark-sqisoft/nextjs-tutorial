@@ -15,6 +15,13 @@
       "when": 1779777309678,
       "tag": "0001_mean_longshot",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1779777400242,
+      "tag": "0002_glorious_pandemic",
+      "breakpoints": true
     }
   ]
 }
