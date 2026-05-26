@@ -18,6 +18,8 @@ export function BookmarkButton({
   );
 
   function onClick() {
+    // 더블 클릭 가드 — disabled 의 페인트 지연으로 두 번째 클릭이 새는 것을 막는다.
+    if (isPending || toggle.isPending) return;
     const next = !optimistic;
     startTransition(async () => {
       setOptimistic(next);
@@ -33,7 +35,7 @@ export function BookmarkButton({
   return (
     <button
       onClick={onClick}
-      disabled={isPending}
+      disabled={isPending || toggle.isPending}
       className="inline-flex items-center gap-1 rounded border px-3 py-1 text-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-900"
     >
       {optimistic ? "★ 북마크됨" : "☆ 북마크"}

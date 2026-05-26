@@ -10,23 +10,34 @@ export const bookmarkRouter = router({
   toggle: protectedProcedure
     .input(z.object({ postId: z.string().uuid() }))
     .mutation(async ({ ctx, input }) => {
-      const inserted = await db
-        .insert(bookmarks)
-        .values({ userId: ctx.user.id, postId: input.postId })
-        .onConflictDoNothing()
-        .returning({ userId: bookmarks.userId });
-      if (inserted.length === 0) {
-        await db
-          .delete(bookmarks)
+      // like 와 같은 select-then-act 패턴 (returning 거동 의존 제거).
+      return await db.transaction(async (tx) => {
+        const [existing] = await tx
+          .select({ userId: bookmarks.userId })
+          .from(bookmarks)
           .where(
             and(
               eq(bookmarks.userId, ctx.user.id),
               eq(bookmarks.postId, input.postId),
             ),
-          );
-        return { bookmarked: false as const };
-      }
-      return { bookmarked: true as const };
+          )
+          .limit(1);
+        if (existing) {
+          await tx
+            .delete(bookmarks)
+            .where(
+              and(
+                eq(bookmarks.userId, ctx.user.id),
+                eq(bookmarks.postId, input.postId),
+              ),
+            );
+          return { bookmarked: false as const };
+        }
+        await tx
+          .insert(bookmarks)
+          .values({ userId: ctx.user.id, postId: input.postId });
+        return { bookmarked: true as const };
+      });
     }),
 
   myBookmarks: protectedProcedure.query(async ({ ctx }) => {

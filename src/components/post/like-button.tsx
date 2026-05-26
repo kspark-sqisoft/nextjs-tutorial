@@ -26,6 +26,9 @@ export function LikeButton({
   );
 
   function onClick() {
+    // 더블 클릭 가드 — button 의 disabled 는 React 가 다음 페인트에 반영하므로
+    // 빠른 두 번째 클릭이 mutation 을 한 번 더 디스패치할 수 있다.
+    if (isPending || toggle.isPending) return;
     const next = !optimistic.liked;
     startTransition(async () => {
       setOptimistic({ liked: next });
@@ -42,7 +45,7 @@ export function LikeButton({
   return (
     <button
       onClick={onClick}
-      disabled={isPending}
+      disabled={isPending || toggle.isPending}
       className="inline-flex items-center gap-1 rounded border px-3 py-1 text-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-900"
     >
       <span>{optimistic.liked ? "♥" : "♡"}</span>
