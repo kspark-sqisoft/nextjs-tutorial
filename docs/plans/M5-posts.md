@@ -12,8 +12,8 @@
 
 ## 사전 조건
 
-- [ ] M1~M4 완료.
-- [ ] attachments 테이블의 `post_id` 컬럼은 nullable uuid (M4 에서 만듦). 이 마일스톤에서 posts FK 를 ALTER 로 추가.
+- [x] M1~M4 완료.
+- [x] attachments 테이블의 `post_id` 컬럼은 nullable uuid (M4 에서 만듦). 이 마일스톤에서 posts FK 를 ALTER 로 추가.
 
 ---
 
@@ -68,7 +68,7 @@
 
 ### Steps
 
-- [ ] **1.1 categories**
+- [x] **1.1 categories**
 
 ```ts
 // src/server/db/schema/categories.ts
@@ -88,7 +88,7 @@ export const categories = pgTable("categories", {
 export type Category = typeof categories.$inferSelect;
 ```
 
-- [ ] **1.2 tags**
+- [x] **1.2 tags**
 
 ```ts
 // src/server/db/schema/tags.ts
@@ -108,7 +108,7 @@ export const tags = pgTable("tags", {
 export type Tag = typeof tags.$inferSelect;
 ```
 
-- [ ] **1.3 posts**
+- [x] **1.3 posts**
 
 ```ts
 // src/server/db/schema/posts.ts
@@ -158,7 +158,7 @@ export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
 ```
 
-- [ ] **1.4 post_tags**
+- [x] **1.4 post_tags**
 
 ```ts
 // src/server/db/schema/post_tags.ts
@@ -176,7 +176,7 @@ export const postTags = pgTable(
 );
 ```
 
-- [ ] **1.5 index.ts 갱신**
+- [x] **1.5 index.ts 갱신**
 
 ```ts
 export * from "./_enums";
@@ -190,13 +190,13 @@ export * from "./posts";
 export * from "./post_tags";
 ```
 
-- [ ] **1.6 마이그레이션 생성**
+- [x] **1.6 마이그레이션 생성**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:generate
 ```
 
-- [ ] **1.7 산출 SQL 에 GENERATED tsvector + GIN 인덱스 + attachments FK 추가**
+- [x] **1.7 산출 SQL 에 GENERATED tsvector + GIN 인덱스 + attachments FK 추가**
 
 생성된 `0005_*.sql` 끝에 추가:
 ```sql
@@ -225,7 +225,7 @@ ALTER TABLE "attachments"
   FOREIGN KEY ("post_id") REFERENCES "posts"("id") ON DELETE CASCADE;
 ```
 
-- [ ] **1.8 적용/검증/커밋**
+- [x] **1.8 적용/검증/커밋**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:migrate
@@ -246,7 +246,7 @@ git commit -m "feat(db): posts/categories/tags + tsvector search column"
 
 ### Steps
 
-- [ ] **2.1 deps**
+- [x] **2.1 deps**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm add @tiptap/react @tiptap/starter-kit \
@@ -255,7 +255,7 @@ docker compose -f compose.dev.yml exec app pnpm add @tiptap/react @tiptap/starte
 pnpm install
 ```
 
-- [ ] **2.2 slug.ts**
+- [x] **2.2 slug.ts**
 
 ```ts
 // 제목 → slug. 한글은 slugify 옵션으로 transliteration 하지 않고, 충돌 시 randomized suffix.
@@ -274,7 +274,7 @@ export async function uniquePostSlug(title: string) {
 }
 ```
 
-- [ ] **2.3 extract-text.ts**
+- [x] **2.3 extract-text.ts**
 
 ```ts
 // Tiptap JSON 트리에서 텍스트 노드만 모아 한 문자열로 변환 — 검색·미리보기용.
@@ -290,7 +290,7 @@ export function extractText(json: unknown): string {
 }
 ```
 
-- [ ] **2.4 sanitize.ts**
+- [x] **2.4 sanitize.ts**
 
 ```ts
 // Tiptap JSON → 안전한 HTML.
@@ -323,7 +323,7 @@ export function renderTiptapToSafeHtml(json: unknown): string {
 }
 ```
 
-- [ ] **2.5 seed-categories.ts**
+- [x] **2.5 seed-categories.ts**
 
 ```ts
 // 첫 실행 시 기본 카테고리 3개 등록 (idempotent).
@@ -354,7 +354,7 @@ main().catch((e) => { console.error(e); process.exit(1); });
 "seed:categories": "tsx scripts/seed-categories.ts"
 ```
 
-- [ ] **2.6 커밋**
+- [x] **2.6 커밋**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm seed:categories
@@ -370,7 +370,7 @@ git commit -m "feat(posts): slug/extract/sanitize utils + categories seed"
 
 ### Steps
 
-- [ ] **3.1 post.ts**
+- [x] **3.1 post.ts**
 
 ```ts
 // src/server/trpc/routers/post.ts
@@ -647,7 +647,7 @@ export const postRouter = router({
 });
 ```
 
-- [ ] **3.2 `_app.ts` 갱신**
+- [x] **3.2 `_app.ts` 갱신**
 
 ```ts
 import { router } from "../trpc";
@@ -663,7 +663,7 @@ export const appRouter = router({
 export type AppRouter = typeof appRouter;
 ```
 
-- [ ] **3.3 커밋**
+- [x] **3.3 커밋**
 
 ```bash
 git add src/server/trpc/routers/post.ts src/server/trpc/routers/_app.ts
@@ -678,7 +678,7 @@ git commit -m "feat(post): trpc CRUD + attachment upload procedures"
 
 ### Steps
 
-- [ ] **4.1 actions/post.ts**
+- [x] **4.1 actions/post.ts**
 
 ```ts
 "use server";
@@ -712,7 +712,7 @@ export async function deletePostAction(formData: FormData): Promise<void> {
 }
 ```
 
-- [ ] **4.2 커밋**
+- [x] **4.2 커밋**
 
 ```bash
 git add src/server/actions/post.ts
@@ -727,7 +727,7 @@ git commit -m "feat(post): delete server action"
 
 ### Steps
 
-- [ ] **5.1 upload-image-extension.ts**
+- [x] **5.1 upload-image-extension.ts**
 
 ```ts
 // Tiptap 의 Image 확장을 wrapping 해 드래그/붙여넣기 시 자동 업로드.
@@ -785,7 +785,7 @@ export function createUploadImageExtension(upload: UploadHandler) {
 }
 ```
 
-- [ ] **5.2 tiptap-editor.tsx**
+- [x] **5.2 tiptap-editor.tsx**
 
 ```tsx
 "use client";
@@ -848,7 +848,7 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
 }
 ```
 
-- [ ] **5.3 커밋**
+- [x] **5.3 커밋**
 
 ```bash
 git add src/components/editor/
@@ -863,7 +863,7 @@ git commit -m "feat(editor): tiptap with drag/paste image upload via presigned P
 
 ### Steps
 
-- [ ] **6.1 PostForm**
+- [x] **6.1 PostForm**
 
 ```tsx
 // src/components/post/post-form.tsx
@@ -970,7 +970,7 @@ export function PostForm({ mode, initial }: PostFormProps) {
 }
 ```
 
-- [ ] **6.2 AttachmentList**
+- [x] **6.2 AttachmentList**
 
 ```tsx
 // src/components/post/attachment-list.tsx
@@ -1026,7 +1026,7 @@ export function AttachmentList({
 }
 ```
 
-- [ ] **6.3 PostCard (RSC 친화 — 클라이언트 코드 없음)**
+- [x] **6.3 PostCard (RSC 친화 — 클라이언트 코드 없음)**
 
 ```tsx
 // src/components/post/post-card.tsx
@@ -1059,7 +1059,7 @@ export function PostCard({ post }: {
 }
 ```
 
-- [ ] **6.4 작성 페이지**
+- [x] **6.4 작성 페이지**
 
 ```tsx
 // src/app/[locale]/(main)/posts/new/page.tsx
@@ -1079,7 +1079,7 @@ export default async function NewPostPage() {
 }
 ```
 
-- [ ] **6.5 상세 페이지 (RSC)**
+- [x] **6.5 상세 페이지 (RSC)**
 
 ```tsx
 // src/app/[locale]/(main)/posts/[slug]/page.tsx
@@ -1129,7 +1129,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 }
 ```
 
-- [ ] **6.6 수정 페이지**
+- [x] **6.6 수정 페이지**
 
 ```tsx
 // src/app/[locale]/(main)/posts/[slug]/edit/page.tsx
@@ -1162,7 +1162,7 @@ export default async function EditPostPage({ params }: { params: Promise<{ slug:
 }
 ```
 
-- [ ] **6.7 createCaller — RSC 에서 tRPC 직접 호출**
+- [x] **6.7 createCaller — RSC 에서 tRPC 직접 호출**
 
 ```ts
 // src/server/trpc/caller.ts
@@ -1182,7 +1182,7 @@ export async function createCaller() {
 }
 ```
 
-- [ ] **6.8 홈피드 RSC (임시)** — M7 의 무한 스크롤 전 단순 노출
+- [x] **6.8 홈피드 RSC (임시)** — M7 의 무한 스크롤 전 단순 노출
 
 ```tsx
 // src/app/[locale]/(main)/page.tsx
@@ -1210,7 +1210,7 @@ export default async function HomePage() {
 }
 ```
 
-- [ ] **6.9 커밋**
+- [x] **6.9 커밋**
 
 ```bash
 git add src/components/post/ src/components/editor/ \
@@ -1223,7 +1223,7 @@ git commit -m "feat(post): create/edit/detail pages + tiptap form + attachments"
 
 ## Task 7 — 수동 검증
 
-- [ ] **7.1 시나리오**
+- [x] **7.1 시나리오**
 
 1. 로그인 → `/ko/posts/new`.
 2. 제목 입력, 본문에 이미지 드래그 → 자동 업로드 → 본문에 노출.
@@ -1238,10 +1238,10 @@ git commit -m "feat(post): create/edit/detail pages + tiptap form + attachments"
 
 ## 마일스톤 종료 체크리스트
 
-- [ ] `pnpm typecheck` 통과.
-- [ ] 새 글 작성·수정·삭제 풀 흐름 통과.
-- [ ] Tiptap 이미지 업로드 → MinIO 객체 + attachments row 동시 생성.
-- [ ] 비작성자 수정 시 404, 비공개 글 비작성자에게 NOT_FOUND.
+- [x] `pnpm typecheck` 통과.
+- [x] 새 글 작성·수정·삭제 풀 흐름 통과.
+- [x] Tiptap 이미지 업로드 → MinIO 객체 + attachments row 동시 생성.
+- [x] 비작성자 수정 시 404, 비공개 글 비작성자에게 NOT_FOUND.
 
 ---
 
