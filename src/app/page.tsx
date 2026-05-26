@@ -1,12 +1,35 @@
 // 부팅 검증용 홈페이지.
 // 마일스톤 5 에서 진짜 피드 페이지로 교체된다.
-export default function HomePage() {
+import { getCurrentUser } from "@/server/auth/current-user";
+import { SignOutButton } from "@/components/auth/sign-out-button";
+
+export default async function HomePage() {
+  const me = await getCurrentUser();
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col items-center justify-center gap-4 p-8">
       <h1 className="text-3xl font-semibold">학습용 블로그 🚀</h1>
       <p className="text-sm text-zinc-500">
-        부트스트랩이 정상 동작 중입니다. 다음 마일스톤은 DB 스키마(M2)입니다.
+        M3 인증까지 완성. 다음은 M4 (프로필 + Presigned 업로드).
       </p>
+      <div className="text-sm">
+        {me ? (
+          <div className="flex items-center gap-3">
+            <span>
+              👋 <strong>{me.nickname}</strong> ({me.role})
+            </span>
+            <SignOutButton />
+          </div>
+        ) : (
+          <div className="flex gap-3">
+            <a href="/sign-in" className="underline">
+              로그인
+            </a>
+            <a href="/sign-up" className="underline">
+              회원가입
+            </a>
+          </div>
+        )}
+      </div>
       <ul className="text-xs text-zinc-400 list-disc">
         <li>
           tRPC ping:{" "}
