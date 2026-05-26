@@ -12,3 +12,4 @@ coverage
 .vscode
 .pnpm-store
 next-env.d.ts
+tsconfig.tsbuildinfo
