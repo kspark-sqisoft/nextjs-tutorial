@@ -4,6 +4,9 @@ import Link from "next/link";
 import { createCaller } from "@/server/trpc/caller";
 import { renderTiptapToSafeHtml } from "@/server/posts/sanitize";
 import { getCurrentUser } from "@/server/auth/current-user";
+import { LikeButton } from "@/components/post/like-button";
+import { BookmarkButton } from "@/components/post/bookmark-button";
+import { CommentSection } from "@/components/comment/comment-section";
 
 export default async function PostPage({
   params,
@@ -55,6 +58,19 @@ export default async function PostPage({
             ))}
           </ul>
         )}
+        {me && (
+          <div className="mt-4 flex gap-2">
+            <LikeButton
+              postId={post.id}
+              initialLiked={post.liked}
+              initialCount={post.likeCount}
+            />
+            <BookmarkButton
+              postId={post.id}
+              initialBookmarked={post.bookmarked}
+            />
+          </div>
+        )}
       </header>
 
       <article
@@ -92,6 +108,8 @@ export default async function PostPage({
           </Link>
         </nav>
       )}
+
+      <CommentSection postId={post.id} canPost={!!me} />
 
       <Link
         href="/"
