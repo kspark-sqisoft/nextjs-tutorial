@@ -63,6 +63,11 @@ services:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/blog
       S3_ENDPOINT: http://minio:9000
       SMTP_HOST: mailpit
+      # Windows bind mount 핫리로드 보장 — webpack 폴링 watcher 가 사용.
+      WATCHPACK_POLLING: "true"
+      WATCHPACK_POLLING_INTERVAL: "1000"
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
     volumes:
       - .:/app
       # node_modules 는 호스트 OS(Windows) 와 분리 — 성능/일관성 위해 named volume.

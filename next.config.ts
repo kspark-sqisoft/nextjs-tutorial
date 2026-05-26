@@ -16,6 +16,16 @@ const nextConfig: NextConfig = {
     // 본 프로젝트는 파일 업로드를 presigned PUT 으로 처리하므로 큰 값 필요 없음.
     serverActions: { bodySizeLimit: "2mb" },
   },
+  // Windows 호스트 + Docker bind mount 조합에선 inotify 이벤트가 컨테이너로
+  // 전달되지 않는다. webpack 의 폴링 watcher 로 우회한다.
+  webpack: (config) => {
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+      ignored: ["**/node_modules", "**/.next", "**/.git"],
+    };
+    return config;
+  },
 };
 
 export default nextConfig;
