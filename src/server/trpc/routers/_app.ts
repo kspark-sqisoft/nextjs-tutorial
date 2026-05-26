@@ -3,10 +3,12 @@
 import { router } from "../trpc";
 import { healthRouter } from "./health";
 import { profileRouter } from "./profile";
+import { postRouter } from "./post";
 
 export const appRouter = router({
   health: healthRouter,
   profile: profileRouter,
+  post: postRouter,
 });
 
 // 클라이언트(`@trpc/react-query`) 가 사용할 타입.
