@@ -5,3 +5,10 @@ import { pgEnum } from "drizzle-orm/pg-core";
 
 // 사용자 권한 enum — M3 의 JWT 페이로드, M8 의 admin 가드에서 사용.
 export const userRoleEnum = pgEnum("user_role", ["USER", "ADMIN"]);
+
+// 첨부 파일 종류 — M4(아바타), M5(글 본문 인라인/별도 첨부)에서 사용.
+export const attachmentKindEnum = pgEnum("attachment_kind", [
+  "AVATAR",
+  "POST_INLINE",
+  "POST_ATTACHMENT",
+]);
