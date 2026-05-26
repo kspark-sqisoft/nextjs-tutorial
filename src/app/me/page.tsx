@@ -1,5 +1,6 @@
 // /me — 내 프로필 페이지. RSC 가 현재 user 로드, 자식이 폼/업로더로 분리.
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentUser } from "@/server/auth/current-user";
 import { publicUrl } from "@/server/storage/s3";
 import { ProfileForm } from "@/components/profile/profile-form";
@@ -25,7 +26,12 @@ export default async function MePage() {
         <ProfileForm initial={{ nickname: me.nickname, bio: me.bio }} />
       </section>
 
-      <SignOutButton />
+      <div className="flex items-center gap-4">
+        <Link href="/me/bookmarks" className="text-sm underline">
+          내 북마크 보기
+        </Link>
+        <SignOutButton />
+      </div>
     </main>
   );
 }

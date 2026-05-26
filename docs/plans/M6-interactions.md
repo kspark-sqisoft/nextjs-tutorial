@@ -12,8 +12,8 @@
 
 ## 사전 조건
 
-- [ ] M1~M5 완료. `post.bySlug` 가 동작.
-- [ ] `protectedProcedure` 활성.
+- [x] M1~M5 완료. `post.bySlug` 가 동작.
+- [x] `protectedProcedure` 활성.
 
 ---
 
@@ -60,7 +60,7 @@
 
 ### Steps
 
-- [ ] **1.1 comments**
+- [x] **1.1 comments**
 
 ```ts
 // src/server/db/schema/comments.ts
@@ -92,7 +92,7 @@ export const comments = pgTable(
 export type Comment = typeof comments.$inferSelect;
 ```
 
-- [ ] **1.2 likes**
+- [x] **1.2 likes**
 
 ```ts
 // src/server/db/schema/likes.ts
@@ -112,7 +112,7 @@ export const likes = pgTable(
 );
 ```
 
-- [ ] **1.3 bookmarks**
+- [x] **1.3 bookmarks**
 
 ```ts
 // src/server/db/schema/bookmarks.ts
@@ -132,7 +132,7 @@ export const bookmarks = pgTable(
 );
 ```
 
-- [ ] **1.4 index.ts 갱신 + 마이그레이션/적용**
+- [x] **1.4 index.ts 갱신 + 마이그레이션/적용**
 
 ```ts
 export * from "./comments";
@@ -157,7 +157,7 @@ git commit -m "feat(db): comments/likes/bookmarks tables"
 
 ### Steps
 
-- [ ] **2.1 comment.ts**
+- [x] **2.1 comment.ts**
 
 ```ts
 import { z } from "zod";
@@ -234,7 +234,7 @@ export const commentRouter = router({
 });
 ```
 
-- [ ] **2.2 like.ts**
+- [x] **2.2 like.ts**
 
 ```ts
 import { z } from "zod";
@@ -270,7 +270,7 @@ export const likeRouter = router({
 });
 ```
 
-- [ ] **2.3 bookmark.ts**
+- [x] **2.3 bookmark.ts**
 
 ```ts
 import { z } from "zod";
@@ -316,7 +316,7 @@ export const bookmarkRouter = router({
 });
 ```
 
-- [ ] **2.4 `_app.ts` 갱신**
+- [x] **2.4 `_app.ts` 갱신**
 
 ```ts
 import { commentRouter } from "./comment";
@@ -334,7 +334,7 @@ export const appRouter = router({
 export type AppRouter = typeof appRouter;
 ```
 
-- [ ] **2.5 커밋**
+- [x] **2.5 커밋**
 
 ```bash
 git add src/server/trpc/routers/{comment,like,bookmark,_app}.ts
@@ -349,7 +349,7 @@ git commit -m "feat(interactions): comment/like/bookmark trpc routers"
 
 ### Steps
 
-- [ ] **3.1 bySlug 확장**
+- [x] **3.1 bySlug 확장**
 
 기존 `bySlug` 반환 객체에 다음 필드 추가:
 ```ts
@@ -374,7 +374,7 @@ if (ctx.user) {
 return { ...p, likeCount, commentCount, liked, bookmarked, tags: tagRows, attachments: /* ... */ };
 ```
 
-- [ ] **3.2 커밋**
+- [x] **3.2 커밋**
 
 ```bash
 git add src/server/trpc/routers/post.ts
@@ -389,7 +389,7 @@ git commit -m "feat(post): include like/bookmark/comment counts in bySlug"
 
 ### Steps
 
-- [ ] **4.1 LikeButton**
+- [x] **4.1 LikeButton**
 
 ```tsx
 "use client";
@@ -441,7 +441,7 @@ export function LikeButton({
 }
 ```
 
-- [ ] **4.2 글 상세에 추가**
+- [x] **4.2 글 상세에 추가**
 
 `posts/[slug]/page.tsx` 의 header 안에:
 ```tsx
@@ -454,7 +454,7 @@ import { BookmarkButton } from "@/components/post/bookmark-button";
 </div>
 ```
 
-- [ ] **4.3 커밋**
+- [x] **4.3 커밋**
 
 ```bash
 git add src/components/post/like-button.tsx src/app/\[locale\]/\(main\)/posts/\[slug\]/page.tsx
@@ -469,7 +469,7 @@ git commit -m "feat(post): LikeButton with useOptimistic"
 
 ### Steps
 
-- [ ] **5.1 BookmarkButton**
+- [x] **5.1 BookmarkButton**
 
 ```tsx
 "use client";
@@ -506,7 +506,7 @@ export function BookmarkButton({
 }
 ```
 
-- [ ] **5.2 /me/bookmarks 페이지 (RSC)**
+- [x] **5.2 /me/bookmarks 페이지 (RSC)**
 
 ```tsx
 // src/app/[locale]/(main)/me/bookmarks/page.tsx
@@ -532,7 +532,7 @@ export default async function MyBookmarksPage() {
 }
 ```
 
-- [ ] **5.3 커밋**
+- [x] **5.3 커밋**
 
 ```bash
 git add src/components/post/bookmark-button.tsx src/app/\[locale\]/\(main\)/me/bookmarks/page.tsx
@@ -547,7 +547,7 @@ git commit -m "feat(post): BookmarkButton + /me/bookmarks page"
 
 ### Steps
 
-- [ ] **6.1 CommentSection (Suspense 경계)**
+- [x] **6.1 CommentSection (Suspense 경계)**
 
 ```tsx
 // src/components/comment/comment-section.tsx
@@ -575,7 +575,7 @@ function CommentSkeleton() {
 }
 ```
 
-- [ ] **6.2 CommentList (RSC)**
+- [x] **6.2 CommentList (RSC)**
 
 ```tsx
 // src/components/comment/comment-list.tsx
@@ -607,7 +607,7 @@ export async function CommentList({ postId }: { postId: string }) {
 }
 ```
 
-- [ ] **6.3 CommentItem (삭제 + 대댓글 토글 — 클라이언트)**
+- [x] **6.3 CommentItem (삭제 + 대댓글 토글 — 클라이언트)**
 
 ```tsx
 // src/components/comment/comment-item.tsx
@@ -686,7 +686,7 @@ export function CommentItem({
 }
 ```
 
-- [ ] **6.4 CommentForm (useOptimistic 리스트 추가)**
+- [x] **6.4 CommentForm (useOptimistic 리스트 추가)**
 
 ```tsx
 // src/components/comment/comment-form.tsx
@@ -756,7 +756,7 @@ export function CommentForm({
 }
 ```
 
-- [ ] **6.5 글 상세에 마운트**
+- [x] **6.5 글 상세에 마운트**
 
 `posts/[slug]/page.tsx` 끝부분:
 ```tsx
@@ -765,7 +765,7 @@ import { CommentSection } from "@/components/comment/comment-section";
 <CommentSection postId={post.id} />
 ```
 
-- [ ] **6.6 커밋**
+- [x] **6.6 커밋**
 
 ```bash
 git add src/components/comment/ src/app/\[locale\]/\(main\)/posts/\[slug\]/page.tsx
@@ -778,7 +778,7 @@ git commit -m "feat(comments): CommentSection with Suspense + useOptimistic form
 
 ### Steps
 
-- [ ] **7.1 시나리오**
+- [x] **7.1 시나리오**
 
 1. 글 상세 페이지 진입 → 본문은 즉시 렌더, 댓글 영역은 fallback "댓글 불러오는 중…" 노출 후 채워짐.
 2. 댓글 작성 → 입력 즉시 "⏳" 임시 항목 노출 → 서버 응답 후 정식 목록으로 교체.
@@ -792,10 +792,10 @@ git commit -m "feat(comments): CommentSection with Suspense + useOptimistic form
 
 ## 마일스톤 종료 체크리스트
 
-- [ ] `pnpm typecheck` 통과.
-- [ ] 댓글/좋아요/북마크 풀 흐름 통과.
-- [ ] `useOptimistic` 3종(리스트 추가/카운트/토글) 모두 동작.
-- [ ] Suspense fallback 노출 후 댓글 streaming.
+- [x] `pnpm typecheck` 통과.
+- [x] 댓글/좋아요/북마크 풀 흐름 통과.
+- [x] `useOptimistic` 3종(리스트 추가/카운트/토글) 모두 동작.
+- [x] Suspense fallback 노출 후 댓글 streaming.
 
 ---
 
