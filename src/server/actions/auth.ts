@@ -5,7 +5,6 @@
 //  - 에러는 throw 가 아니라 { ok:false, message } 로 반환해 UI 가 그대로 표시하게 한다.
 //  - 성공 후 페이지 이동이 필요한 경우만 redirect.
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/server/db/client";
@@ -150,7 +149,8 @@ export async function verifyEmailAction(
     .update(users)
     .set({ emailVerifiedAt: new Date() })
     .where(eq(users.id, result.userId));
-  revalidatePath("/");
+  // revalidatePath 제거: RSC 에서 직접 호출되는 경우(verify-email 페이지) Next.js 가
+  // 렌더 중 revalidatePath 를 금지한다. 사용자는 어차피 로그인 시 새로 fetch 되므로 무해.
   return {
     ok: true,
     message: "이메일 인증이 완료되었습니다. 이제 로그인 할 수 있어요.",
