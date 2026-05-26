@@ -12,9 +12,9 @@
 
 ## 사전 조건
 
-- [ ] M1~M3 완료. `getCurrentUser`, `protectedProcedure` 사용 가능.
-- [ ] MinIO 컨테이너 동작 + `blog` 버킷 존재 + `mc anonymous set download local/blog` 적용됨 (M1 `minio-init` 산출물).
-- [ ] MinIO CORS: 브라우저 → MinIO PUT 을 허용하도록 dev 컨테이너 초기화에서 `mc admin config set local api cors_allow_origin="*"` 가 적용되어 있어야 한다 (없으면 step 1.x 에서 추가).
+- [x] M1~M3 완료. `getCurrentUser`, `protectedProcedure` 사용 가능.
+- [x] MinIO 컨테이너 동작 + `blog` 버킷 존재 + `mc anonymous set download local/blog` 적용됨 (M1 `minio-init` 산출물).
+- [x] MinIO CORS: 브라우저 → MinIO PUT 을 허용하도록 dev 컨테이너 초기화에서 `mc admin config set local api cors_allow_origin="*"` 가 적용되어 있어야 한다 (없으면 step 1.x 에서 추가).
 
 ---
 
@@ -63,7 +63,7 @@
 
 ### Steps
 
-- [ ] **1.1 enum 추가**
+- [x] **1.1 enum 추가**
 
 `src/server/db/schema/_enums.ts`
 ```ts
@@ -77,7 +77,7 @@ export const attachmentKindEnum = pgEnum("attachment_kind", [
 ]);
 ```
 
-- [ ] **1.2 attachments 스키마**
+- [x] **1.2 attachments 스키마**
 
 `src/server/db/schema/attachments.ts`
 ```ts
@@ -125,7 +125,7 @@ export type Attachment = typeof attachments.$inferSelect;
 export type NewAttachment = typeof attachments.$inferInsert;
 ```
 
-- [ ] **1.3 index.ts 갱신**
+- [x] **1.3 index.ts 갱신**
 
 ```ts
 export * from "./_enums";
@@ -135,7 +135,7 @@ export * from "./tokens";
 export * from "./attachments";
 ```
 
-- [ ] **1.4 마이그레이션 생성/적용/검증/커밋**
+- [x] **1.4 마이그레이션 생성/적용/검증/커밋**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:generate
@@ -155,7 +155,7 @@ git commit -m "feat(db): attachments table with kind enum"
 
 ### Steps
 
-- [ ] **2.1 MinIO CORS — `compose.dev.yml` 의 `minio-init` entrypoint 확장**
+- [x] **2.1 MinIO CORS — `compose.dev.yml` 의 `minio-init` entrypoint 확장**
 
 ```yaml
   minio-init:
@@ -176,14 +176,14 @@ git commit -m "feat(db): attachments table with kind enum"
 
 > `mc admin service restart local` 가 한 번 일어나므로, 정책이 적용되려면 컨테이너 재기동 필요.
 
-- [ ] **2.2 deps 설치**
+- [x] **2.2 deps 설치**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm add @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
 pnpm install
 ```
 
-- [ ] **2.3 s3.ts**
+- [x] **2.3 s3.ts**
 
 ```ts
 // S3-호환 클라이언트. MinIO 는 path-style 만 지원하므로 forcePathStyle: true.
@@ -207,7 +207,7 @@ export function publicUrl(objectKey: string) {
 }
 ```
 
-- [ ] **2.4 constraints.ts**
+- [x] **2.4 constraints.ts**
 
 ```ts
 // kind 별 허용 MIME / 최대 사이즈.
@@ -236,7 +236,7 @@ export const UPLOAD_CONSTRAINTS = {
 export type UploadKind = keyof typeof UPLOAD_CONSTRAINTS;
 ```
 
-- [ ] **2.5 커밋**
+- [x] **2.5 커밋**
 
 ```bash
 git add compose.dev.yml src/server/storage/s3.ts src/server/storage/constraints.ts package.json pnpm-lock.yaml
@@ -251,7 +251,7 @@ git commit -m "feat(storage): s3 client + upload kind constraints + minio CORS"
 
 ### Steps
 
-- [ ] **3.1 presign.ts**
+- [x] **3.1 presign.ts**
 
 ```ts
 // presigned URL 발급 도우미.
@@ -331,7 +331,7 @@ export async function presignedGet(objectKey: string) {
 }
 ```
 
-- [ ] **3.2 tests/storage/presign.test.ts**
+- [x] **3.2 tests/storage/presign.test.ts**
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -365,7 +365,7 @@ describe("presign", () => {
 });
 ```
 
-- [ ] **3.3 커밋**
+- [x] **3.3 커밋**
 
 ```bash
 pnpm test tests/storage/presign.test.ts
@@ -381,7 +381,7 @@ git commit -m "feat(storage): presigned PUT issuance with whitelist validation"
 
 ### Steps
 
-- [ ] **4.1 profile 라우터**
+- [x] **4.1 profile 라우터**
 
 ```ts
 // src/server/trpc/routers/profile.ts
@@ -470,7 +470,7 @@ export const profileRouter = router({
 });
 ```
 
-- [ ] **4.2 `_app.ts` 갱신**
+- [x] **4.2 `_app.ts` 갱신**
 
 ```ts
 import { router } from "../trpc";
@@ -485,7 +485,7 @@ export const appRouter = router({
 export type AppRouter = typeof appRouter;
 ```
 
-- [ ] **4.3 updateProfileAction (서버 액션 폼용)**
+- [x] **4.3 updateProfileAction (서버 액션 폼용)**
 
 ```ts
 // src/server/actions/profile.ts
@@ -530,7 +530,7 @@ export async function updateProfileAction(
 }
 ```
 
-- [ ] **4.4 커밋**
+- [x] **4.4 커밋**
 
 ```bash
 git add src/server/trpc/routers/profile.ts src/server/trpc/routers/_app.ts src/server/actions/profile.ts
@@ -545,7 +545,7 @@ git commit -m "feat(profile): trpc router + updateProfile server action"
 
 ### Steps
 
-- [ ] **5.1 트RPC 클라이언트 셋업 — `src/lib/trpc-client.ts`** (이전 마일스톤에서 안 만들었다면 지금)
+- [x] **5.1 트RPC 클라이언트 셋업 — `src/lib/trpc-client.ts`** (이전 마일스톤에서 안 만들었다면 지금)
 
 ```ts
 "use client";
@@ -592,7 +592,7 @@ export function Providers({ children }: PropsWithChildren) {
 }
 ```
 
-- [ ] **5.2 ProfileForm (Server Action 폼)**
+- [x] **5.2 ProfileForm (Server Action 폼)**
 
 ```tsx
 // src/components/profile/profile-form.tsx
@@ -635,7 +635,7 @@ export function ProfileForm({ initial }: { initial: { nickname: string; bio: str
 }
 ```
 
-- [ ] **5.3 AvatarUploader (presigned PUT 직접 업로드)**
+- [x] **5.3 AvatarUploader (presigned PUT 직접 업로드)**
 
 ```tsx
 // src/components/profile/avatar-uploader.tsx
@@ -709,7 +709,7 @@ export function AvatarUploader({ initialUrl }: { initialUrl: string | null }) {
 }
 ```
 
-- [ ] **5.4 `/me` 페이지 (RSC)**
+- [x] **5.4 `/me` 페이지 (RSC)**
 
 ```tsx
 // src/app/[locale]/(main)/me/page.tsx
@@ -743,7 +743,7 @@ export default async function MePage() {
 
 > `getCurrentUser` 가 bio 를 안 가져오니, 이 페이지에서는 `db` 로 직접 한 번 더 조회하거나 `getCurrentUser` 의 select 에 `bio` 를 추가하는 게 더 깔끔. (학습 차원에서 양쪽 다 시도해보길 권장.)
 
-- [ ] **5.5 커밋**
+- [x] **5.5 커밋**
 
 ```bash
 git add src/components/profile/ src/app/\[locale\]/\(main\)/me/page.tsx src/lib/trpc-client.ts src/components/providers.tsx
@@ -756,7 +756,7 @@ git commit -m "feat(profile): /me page + ProfileForm + AvatarUploader with presi
 
 ### Steps
 
-- [ ] **6.1 풀 흐름 시나리오**
+- [x] **6.1 풀 흐름 시나리오**
 
 1. 로그인 (M3 의 회원가입·인증 거친 계정).
 2. `/ko/me` 접근.
@@ -767,7 +767,7 @@ git commit -m "feat(profile): /me page + ProfileForm + AvatarUploader with presi
 7. 닉네임/소개 수정 후 "저장됨" 메시지.
 8. drizzle-studio (`pnpm db:studio`) → `attachments` 테이블에 새 row, `users.avatar_key` 갱신 확인.
 
-- [ ] **6.2 예외 시나리오**
+- [x] **6.2 예외 시나리오**
 
 - 4MB png → 클라이언트에서 즉시 거절 (서버까지 안 감).
 - exe 파일 확장자만 jpg 로 바꿔 업로드 → 서버 confirm 단계에서 MIME 화이트리스트로 거절(브라우저가 정확한 MIME 을 보내므로 보통은 통과 안 됨; 추가 보안은 magic byte 검증, M4 범위 밖).
@@ -776,10 +776,10 @@ git commit -m "feat(profile): /me page + ProfileForm + AvatarUploader with presi
 
 ## 마일스톤 종료 체크리스트
 
-- [ ] `pnpm test tests/storage/presign.test.ts` 통과.
-- [ ] DB: `attachments` 4개 인덱스 존재, `users.avatar_key` nullable.
-- [ ] MinIO 콘솔에서 업로드된 객체 확인.
-- [ ] 모든 새 파일에 한국어 주석.
+- [x] `pnpm test tests/storage/presign.test.ts` 통과.
+- [x] DB: `attachments` 4개 인덱스 존재, `users.avatar_key` nullable.
+- [x] MinIO 콘솔에서 업로드된 객체 확인.
+- [x] 모든 새 파일에 한국어 주석.
 
 ---
 
