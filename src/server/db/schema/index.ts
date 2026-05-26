@@ -6,3 +6,7 @@ export * from "./users";
 export * from "./sessions";
 export * from "./tokens";
 export * from "./attachments";
+export * from "./categories";
+export * from "./tags";
+export * from "./posts";
+export * from "./post_tags";
