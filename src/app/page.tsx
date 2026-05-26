@@ -17,6 +17,9 @@ export default async function HomePage() {
             <span>
               👋 <strong>{me.nickname}</strong> ({me.role})
             </span>
+            <a href="/me" className="underline">
+              내 프로필
+            </a>
             <SignOutButton />
           </div>
         ) : (
