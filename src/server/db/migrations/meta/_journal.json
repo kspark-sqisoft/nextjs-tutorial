@@ -8,6 +8,13 @@
       "when": 1779777107000,
       "tag": "0000_noisy_blizzard",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779777309678,
+      "tag": "0001_mean_longshot",
+      "breakpoints": true
     }
   ]
 }
