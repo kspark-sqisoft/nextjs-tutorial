@@ -12,10 +12,10 @@
 
 ## 사전 조건
 
-- [ ] **선행 마일스톤 완료**: M1 부트스트랩이 끝나 `docker compose -f compose.dev.yml up` 으로 `postgres`, `app` 컨테이너가 healthy.
-- [ ] **`.env` 존재**: `DATABASE_URL=postgres://postgres:postgres@postgres:5432/blog` (컨테이너 내부 관점), 호스트에서 직접 접근 시 `localhost:5432`.
-- [ ] **`drizzle.config.ts` 존재** (M1 step 1.9 산출물).
-- [ ] **`src/server/db/schema/` 디렉터리** 존재 (없으면 `.gitkeep` 으로 만들고 시작).
+- [x] **선행 마일스톤 완료**: M1 부트스트랩이 끝나 `docker compose -f compose.dev.yml up` 으로 `postgres`, `app` 컨테이너가 healthy.
+- [x] **`.env` 존재**: `DATABASE_URL=postgres://postgres:postgres@postgres:5432/blog` (컨테이너 내부 관점), 호스트에서 직접 접근 시 `localhost:5432`.
+- [x] **`drizzle.config.ts` 존재** (M1 step 1.9 산출물).
+- [x] **`src/server/db/schema/` 디렉터리** 존재 (없으면 `.gitkeep` 으로 만들고 시작).
 
 ---
 
@@ -65,14 +65,14 @@
 
 ### Steps
 
-- [ ] **1.1 디렉터리 보장**
+- [x] **1.1 디렉터리 보장**
 
 호스트 셸:
 ```bash
 mkdir -p src/server/db/migrations
 ```
 
-- [ ] **1.2 0000_extensions.sql 작성**
+- [x] **1.2 0000_extensions.sql 작성**
 
 `src/server/db/migrations/0000_extensions.sql`
 ```sql
@@ -82,7 +82,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS citext;
 ```
 
-- [ ] **1.3 적용 확인 명령(이 단계에선 아직 자동 실행 X)**
+- [x] **1.3 적용 확인 명령(이 단계에선 아직 자동 실행 X)**
 
 호스트에서:
 ```bash
@@ -91,7 +91,7 @@ docker compose -f compose.dev.yml exec postgres \
 ```
 > 학습 차원에서 **수동 적용으로 한 번 동작 검증**한다. Task 2 에서 drizzle-kit 의 정식 migrate 파이프라인이 같은 SQL 을 다시 적용해도 `IF NOT EXISTS` 라 안전.
 
-- [ ] **1.4 검증**
+- [x] **1.4 검증**
 
 ```bash
 docker compose -f compose.dev.yml exec postgres \
@@ -99,7 +99,7 @@ docker compose -f compose.dev.yml exec postgres \
 ```
 Expected: 두 줄 모두 출력.
 
-- [ ] **1.5 커밋**
+- [x] **1.5 커밋**
 
 ```bash
 git add src/server/db/migrations/0000_extensions.sql
@@ -117,7 +117,7 @@ git commit -m "feat(db): enable pgcrypto and citext extensions"
 
 ### Steps
 
-- [ ] **2.1 enum 정의 파일**
+- [x] **2.1 enum 정의 파일**
 
 `src/server/db/schema/_enums.ts`
 ```ts
@@ -129,7 +129,7 @@ import { pgEnum } from "drizzle-orm/pg-core";
 export const userRoleEnum = pgEnum("user_role", ["USER", "ADMIN"]);
 ```
 
-- [ ] **2.2 users 스키마 작성**
+- [x] **2.2 users 스키마 작성**
 
 `src/server/db/schema/users.ts`
 ```ts
@@ -190,7 +190,7 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 ```
 
-- [ ] **2.3 schema/index.ts 작성 (현재까지)**
+- [x] **2.3 schema/index.ts 작성 (현재까지)**
 
 `src/server/db/schema/index.ts`
 ```ts
@@ -201,7 +201,7 @@ export * from "./_enums";
 export * from "./users";
 ```
 
-- [ ] **2.4 drizzle-kit 으로 마이그레이션 SQL 생성**
+- [x] **2.4 drizzle-kit 으로 마이그레이션 SQL 생성**
 
 호스트에서 (의존성은 이미 설치되어 있다고 가정. 안 되어 있으면 `docker compose -f compose.dev.yml exec app pnpm install`):
 ```bash
@@ -209,7 +209,7 @@ docker compose -f compose.dev.yml exec app pnpm db:generate
 ```
 Expected: `src/server/db/migrations/0001_<random_name>.sql` 와 `meta/_journal.json` 갱신.
 
-- [ ] **2.5 생성된 SQL 검토**
+- [x] **2.5 생성된 SQL 검토**
 
 생성된 `0001_*.sql` 을 열어 다음을 확인:
 - `CREATE TYPE "public"."user_role" AS ENUM('USER','ADMIN');`
@@ -219,14 +219,14 @@ Expected: `src/server/db/migrations/0001_<random_name>.sql` 와 `meta/_journal.j
 
 문제 있으면 스키마 수정 → `pnpm db:generate` 재실행 → 자동 생성된 잘못된 SQL 파일은 손으로 삭제.
 
-- [ ] **2.6 마이그레이션 적용**
+- [x] **2.6 마이그레이션 적용**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:migrate
 ```
 Expected: `0000_extensions.sql`, `0001_*.sql` 둘 다 `applied`.
 
-- [ ] **2.7 검증 (psql)**
+- [x] **2.7 검증 (psql)**
 
 ```bash
 docker compose -f compose.dev.yml exec postgres \
@@ -246,14 +246,14 @@ docker compose -f compose.dev.yml exec postgres \
 ```
 Expected: 1 row (citext 가 대소문자 무시 매칭).
 
-- [ ] **2.8 정리 (테스트 데이터 삭제)**
+- [x] **2.8 정리 (테스트 데이터 삭제)**
 
 ```bash
 docker compose -f compose.dev.yml exec postgres \
   psql -U postgres -d blog -c "DELETE FROM users WHERE email='test@example.com';"
 ```
 
-- [ ] **2.9 커밋**
+- [x] **2.9 커밋**
 
 ```bash
 git add src/server/db/schema/_enums.ts src/server/db/schema/users.ts src/server/db/schema/index.ts src/server/db/migrations/0001_*.sql src/server/db/migrations/meta
@@ -272,7 +272,7 @@ git commit -m "feat(db): add users table with citext email and role enum"
 
 ### Steps
 
-- [ ] **3.1 sessions 스키마**
+- [x] **3.1 sessions 스키마**
 
 `src/server/db/schema/sessions.ts`
 ```ts
@@ -327,7 +327,7 @@ export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
 ```
 
-- [ ] **3.2 index.ts 갱신**
+- [x] **3.2 index.ts 갱신**
 
 `src/server/db/schema/index.ts`
 ```ts
@@ -336,27 +336,27 @@ export * from "./users";
 export * from "./sessions";
 ```
 
-- [ ] **3.3 generate**
+- [x] **3.3 generate**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:generate
 ```
 Expected: 새 `0002_*.sql` 생성.
 
-- [ ] **3.4 SQL 검토**
+- [x] **3.4 SQL 검토**
 
 `0002_*.sql` 에서 확인:
 - `CREATE TABLE "sessions" (...)` 안에 `"ip" inet`, `"replaced_by" uuid` (FK 없음 — self ref 생략).
 - `"user_id" uuid NOT NULL REFERENCES "users"("id") ON DELETE CASCADE`.
 - 두 인덱스 생성문.
 
-- [ ] **3.5 적용**
+- [x] **3.5 적용**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:migrate
 ```
 
-- [ ] **3.6 검증**
+- [x] **3.6 검증**
 
 ```bash
 docker compose -f compose.dev.yml exec postgres \
@@ -377,7 +377,7 @@ SELECT count(*) FROM sessions WHERE user_id = :'id';
 ```
 Expected: 첫 SELECT = 1, DELETE 후 SELECT = 0 (CASCADE 동작).
 
-- [ ] **3.7 커밋**
+- [x] **3.7 커밋**
 
 ```bash
 git add src/server/db/schema/sessions.ts src/server/db/schema/index.ts src/server/db/migrations/0002_*.sql src/server/db/migrations/meta
@@ -396,7 +396,7 @@ git commit -m "feat(db): add sessions table for refresh token rotation"
 
 ### Steps
 
-- [ ] **4.1 tokens.ts 작성**
+- [x] **4.1 tokens.ts 작성**
 
 `src/server/db/schema/tokens.ts`
 ```ts
@@ -459,7 +459,7 @@ export type PasswordReset = typeof passwordResets.$inferSelect;
 export type NewPasswordReset = typeof passwordResets.$inferInsert;
 ```
 
-- [ ] **4.2 index.ts 갱신**
+- [x] **4.2 index.ts 갱신**
 
 `src/server/db/schema/index.ts`
 ```ts
@@ -469,20 +469,20 @@ export * from "./sessions";
 export * from "./tokens";
 ```
 
-- [ ] **4.3 generate**
+- [x] **4.3 generate**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:generate
 ```
 Expected: `0003_*.sql` 생성.
 
-- [ ] **4.4 적용**
+- [x] **4.4 적용**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:migrate
 ```
 
-- [ ] **4.5 검증**
+- [x] **4.5 검증**
 
 ```bash
 docker compose -f compose.dev.yml exec postgres \
@@ -490,7 +490,7 @@ docker compose -f compose.dev.yml exec postgres \
 ```
 Expected: 두 테이블 모두 표시, 인덱스 4개.
 
-- [ ] **4.6 커밋**
+- [x] **4.6 커밋**
 
 ```bash
 git add src/server/db/schema/tokens.ts src/server/db/schema/index.ts src/server/db/migrations/0003_*.sql src/server/db/migrations/meta
@@ -510,7 +510,7 @@ git commit -m "feat(db): add email_verifications and password_resets tables"
 
 ### Steps
 
-- [ ] **5.1 client.ts 작성**
+- [x] **5.1 client.ts 작성**
 
 `src/server/db/client.ts`
 ```ts
@@ -542,7 +542,7 @@ export const db = drizzle(client, { schema });
 export type DB = typeof db;
 ```
 
-- [ ] **5.2 migrate.ts (런타임 마이그레이션 적용)**
+- [x] **5.2 migrate.ts (런타임 마이그레이션 적용)**
 
 `src/server/db/migrate.ts`
 ```ts
@@ -570,7 +570,7 @@ main().catch((err) => {
 });
 ```
 
-- [ ] **5.3 package.json scripts 추가**
+- [x] **5.3 package.json scripts 추가**
 
 `package.json` 의 `scripts` 에 추가:
 ```json
@@ -580,7 +580,7 @@ main().catch((err) => {
 
 > `tsx` 가 devDependency 에 없으면 추가: `pnpm add -D tsx`.
 
-- [ ] **5.4 부팅 검증**
+- [x] **5.4 부팅 검증**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm db:migrate:run
@@ -595,7 +595,7 @@ docker compose -f compose.dev.yml exec app pnpm db:migrate:run
 ```
 > `db:reset` 후 0000_extensions.sql 은 drizzle 의 migrator 가 인식하지 못할 수 있다(파일 형식 차이). 그래서 위 두 번째 라인에서 수동으로 다시 활성화한다. 향후 개선: 0000 도 drizzle-kit 의 `--custom` 마이그레이션으로 정식 등록.
 
-- [ ] **5.5 커밋**
+- [x] **5.5 커밋**
 
 ```bash
 git add src/server/db/client.ts src/server/db/migrate.ts package.json pnpm-lock.yaml
@@ -620,7 +620,7 @@ git commit -m "feat(db): drizzle client + runtime migrate script"
 
 ### Steps
 
-- [ ] **6.1 vitest.config.ts 갱신**
+- [x] **6.1 vitest.config.ts 갱신**
 
 `vitest.config.ts`
 ```ts
@@ -640,7 +640,7 @@ export default defineConfig({
 });
 ```
 
-- [ ] **6.2 tests/setup.ts 작성**
+- [x] **6.2 tests/setup.ts 작성**
 
 `tests/setup.ts`
 ```ts
@@ -663,7 +663,7 @@ if (process.env.TEST_DATABASE_URL) {
 TEST_DATABASE_URL=postgres://postgres:postgres@localhost:5432/blog
 ```
 
-- [ ] **6.3 실패하는 통합 테스트 먼저 작성**
+- [x] **6.3 실패하는 통합 테스트 먼저 작성**
 
 `tests/db/schema.test.ts`
 ```ts
@@ -768,7 +768,7 @@ describe("DB schema v1", () => {
 });
 ```
 
-- [ ] **6.4 실패 확인**
+- [x] **6.4 실패 확인**
 
 ```bash
 pnpm test
@@ -779,14 +779,14 @@ Expected (이 시점 결과 예상):
 
 > TDD 의 의도(실패→통과)를 살리려면, **6.3 을 작성하기 전에 일부러 schema/users 에서 unique 인덱스를 빼고 테스트를 돌려 실패를 본 뒤 되돌리는** 식의 학습 실험을 권장한다. (선택)
 
-- [ ] **6.5 통과 확인 + 커버리지 메모**
+- [x] **6.5 통과 확인 + 커버리지 메모**
 
 ```bash
 pnpm test
 ```
 Expected: 5 passed.
 
-- [ ] **6.6 커밋**
+- [x] **6.6 커밋**
 
 ```bash
 git add tests/setup.ts tests/db/schema.test.ts vitest.config.ts .env package.json pnpm-lock.yaml
@@ -797,11 +797,11 @@ git commit -m "test(db): integration tests for users/sessions/tokens schema"
 
 ## 마일스톤 종료 체크리스트
 
-- [ ] `pnpm typecheck` 통과 (`docker compose -f compose.dev.yml exec app pnpm typecheck`).
-- [ ] `pnpm test` 5 case 통과.
-- [ ] `docker compose -f compose.dev.yml --profile tools up drizzle-studio` → `http://localhost:4983` 에서 `users`, `sessions`, `email_verifications`, `password_resets` 4개 테이블 시각 확인.
-- [ ] `git log --oneline` 결과에 6개의 잘게 쪼개진 커밋 (확장 / users / sessions / tokens / client+migrate / tests).
-- [ ] 모든 새 파일에 한국어 주석.
+- [x] `pnpm typecheck` 통과 (`docker compose -f compose.dev.yml exec app pnpm typecheck`).
+- [x] `pnpm test` 5 case 통과.
+- [x] `docker compose -f compose.dev.yml --profile tools up drizzle-studio` → `http://localhost:4983` 에서 `users`, `sessions`, `email_verifications`, `password_resets` 4개 테이블 시각 확인.
+- [x] `git log --oneline` 결과에 6개의 잘게 쪼개진 커밋 (확장 / users / sessions / tokens / client+migrate / tests).
+- [x] 모든 새 파일에 한국어 주석.
 
 ---
 
