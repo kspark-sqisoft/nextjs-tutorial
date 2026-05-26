@@ -10,7 +10,10 @@ import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { db } from "@/server/db/client";
 import {
   attachments,
+  bookmarks,
   categories,
+  comments,
+  likes,
   postTags,
   posts,
   tags,
@@ -170,6 +173,40 @@ export const postRouter = router({
             eq(attachments.kind, "POST_ATTACHMENT"),
           ),
         );
+      // 좋아요/댓글 카운트 + 현재 사용자의 liked/bookmarked 상태.
+      // 학습 단순화: 분리된 쿼리 3-4개. 운영에선 lateral join 한 번으로 묶을 수 있다.
+      const [likeRow] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(likes)
+        .where(eq(likes.postId, p.id));
+      const [commentRow] = await db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(comments)
+        .where(eq(comments.postId, p.id));
+      let liked = false;
+      let bookmarked = false;
+      if (ctx.user) {
+        const [l] = await db
+          .select()
+          .from(likes)
+          .where(
+            and(eq(likes.userId, ctx.user.id), eq(likes.postId, p.id)),
+          )
+          .limit(1);
+        liked = !!l;
+        const [b] = await db
+          .select()
+          .from(bookmarks)
+          .where(
+            and(
+              eq(bookmarks.userId, ctx.user.id),
+              eq(bookmarks.postId, p.id),
+            ),
+          )
+          .limit(1);
+        bookmarked = !!b;
+      }
+
       return {
         ...p,
         authorAvatarUrl: p.authorAvatarKey
@@ -180,6 +217,10 @@ export const postRouter = router({
           ...a,
           url: publicUrl(a.objectKey),
         })),
+        likeCount: likeRow?.count ?? 0,
+        commentCount: commentRow?.count ?? 0,
+        liked,
+        bookmarked,
       };
     }),
 
