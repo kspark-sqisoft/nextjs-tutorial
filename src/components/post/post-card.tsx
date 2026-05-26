@@ -1,6 +1,7 @@
 // 글 카드 — RSC 친화 (클라이언트 코드 없음).
 import Link from "next/link";
 import Image from "next/image";
+import { formatKoDateTime } from "@/lib/format";
 
 export function PostCard({
   post,
@@ -32,7 +33,7 @@ export function PostCard({
         )}
         <span>{post.authorNickname}</span>
         <span>·</span>
-        <time>{new Date(post.createdAt).toLocaleString("ko-KR")}</time>
+        <time>{formatKoDateTime(post.createdAt)}</time>
       </div>
     </Link>
   );

@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/server/auth/current-user";
 import { LikeButton } from "@/components/post/like-button";
 import { BookmarkButton } from "@/components/post/bookmark-button";
 import { CommentSection } from "@/components/comment/comment-section";
+import { formatKoDateTime } from "@/lib/format";
 
 export default async function PostPage({
   params,
@@ -31,8 +32,7 @@ export default async function PostPage({
       <header className="mb-6">
         <h1 className="text-3xl font-semibold">{post.title}</h1>
         <p className="mt-2 text-sm text-zinc-500">
-          {post.authorNickname} ·{" "}
-          {new Date(post.createdAt).toLocaleString("ko-KR")}
+          {post.authorNickname} · {formatKoDateTime(post.createdAt)}
           {post.categoryName && (
             <>
               {" · "}

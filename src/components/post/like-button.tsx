@@ -1,7 +1,11 @@
 "use client";
-// 학습 포인트: useOptimistic 으로 클릭 즉시 UI 가 반영되고,
-// 서버 응답이 오면 실제 값으로 sync. 실패 시 다음 RSC refresh 가 진실로 덮어쓴다.
+// 학습 포인트:
+//  - useOptimistic 으로 클릭 즉시 UI 가 반영되고, 서버 응답이 오면 실제 값으로 sync.
+//  - useOptimistic 의 base state 는 props 이므로, transition 종료 시점에는 base 로 reset.
+//    따라서 mutation 성공 후 router.refresh() 로 RSC 를 다시 실행시켜 base 자체를 갱신해야
+//    화면이 새 값을 유지한다 (안 그러면 잠깐 바뀌었다가 옛 값으로 돌아간다).
 import { useOptimistic, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
 
 export function LikeButton({
@@ -13,6 +17,7 @@ export function LikeButton({
   initialLiked: boolean;
   initialCount: number;
 }) {
+  const router = useRouter();
   const toggle = trpc.like.toggle.useMutation();
   const [isPending, startTransition] = useTransition();
 
@@ -36,6 +41,8 @@ export function LikeButton({
         const r = await toggle.mutateAsync({ postId });
         // 서버 응답으로 sync — 동시 다발 클릭 시 카운트 정합성 보장.
         setOptimistic({ liked: r.liked });
+        // RSC 재실행 → bySlug 다시 fetch → useOptimistic base 갱신.
+        router.refresh();
       } catch {
         // 실패 시 다음 RSC refresh 가 진실로 덮어쓴다.
       }

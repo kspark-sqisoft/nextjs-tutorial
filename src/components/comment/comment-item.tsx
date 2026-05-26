@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { trpc } from "@/lib/trpc-client";
+import { formatKoDateTime } from "@/lib/format";
 import { CommentForm } from "./comment-form";
 
 export interface CommentDTO {
@@ -66,9 +67,7 @@ export function CommentItem({
             <span className="font-medium text-zinc-900 dark:text-zinc-100">
               {comment.authorNickname}
             </span>
-            <time>
-              {new Date(comment.createdAt).toLocaleString("ko-KR")}
-            </time>
+            <time>{formatKoDateTime(comment.createdAt)}</time>
           </header>
           <p className="mt-1 whitespace-pre-wrap text-sm">
             {comment.content}

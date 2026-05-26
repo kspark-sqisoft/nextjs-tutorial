@@ -1,6 +1,8 @@
 "use client";
 // 학습 포인트: useOptimistic 의 토글 패턴 (단일 boolean).
+// LikeButton 과 같은 이유로 mutation 후 router.refresh() 로 RSC base state 갱신.
 import { useOptimistic, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
 
 export function BookmarkButton({
@@ -10,6 +12,7 @@ export function BookmarkButton({
   postId: string;
   initialBookmarked: boolean;
 }) {
+  const router = useRouter();
   const toggle = trpc.bookmark.toggle.useMutation();
   const [isPending, startTransition] = useTransition();
   const [optimistic, setOptimistic] = useOptimistic(
@@ -26,6 +29,7 @@ export function BookmarkButton({
       try {
         const r = await toggle.mutateAsync({ postId });
         setOptimistic(r.bookmarked);
+        router.refresh();
       } catch {
         // 다음 RSC refresh 가 진실로 덮어쓴다.
       }
