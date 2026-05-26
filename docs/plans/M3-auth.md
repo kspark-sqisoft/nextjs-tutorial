@@ -12,9 +12,9 @@
 
 ## 사전 조건
 
-- [ ] M1, M2 완료. `users / sessions / email_verifications / password_resets` 테이블 적용됨.
-- [ ] `.env` 에 `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` 32자 이상 (`openssl rand -base64 48`).
-- [ ] Mailpit 컨테이너 동작 (`http://localhost:8025` 접속 가능).
+- [x] M1, M2 완료. `users / sessions / email_verifications / password_resets` 테이블 적용됨.
+- [x] `.env` 에 `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` 32자 이상 (`openssl rand -base64 48`).
+- [x] Mailpit 컨테이너 동작 (`http://localhost:8025` 접속 가능).
 
 ---
 
@@ -79,7 +79,7 @@
 
 ### Steps
 
-- [ ] **1.1 deps 설치**
+- [x] **1.1 deps 설치**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm add @node-rs/argon2 jose nodemailer @react-email/components
@@ -91,7 +91,7 @@ docker compose -f compose.dev.yml exec app pnpm add -D @types/nodemailer react-e
 pnpm install
 ```
 
-- [ ] **1.2 password.ts**
+- [x] **1.2 password.ts**
 
 ```ts
 // argon2id — OWASP 권장 비밀번호 해시. bcrypt 보다 메모리/시간 비용 조절이 명확.
@@ -123,7 +123,7 @@ export async function verifyPassword(
 }
 ```
 
-- [ ] **1.3 테스트 `tests/auth/password.test.ts`**
+- [x] **1.3 테스트 `tests/auth/password.test.ts`**
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -145,7 +145,7 @@ describe("argon2 password", () => {
 });
 ```
 
-- [ ] **1.4 실행/커밋**
+- [x] **1.4 실행/커밋**
 
 ```bash
 pnpm test tests/auth/password.test.ts
@@ -161,7 +161,7 @@ git commit -m "feat(auth): argon2id password hashing"
 
 ### Steps
 
-- [ ] **2.1 jwt.ts**
+- [x] **2.1 jwt.ts**
 
 ```ts
 // jose — Edge runtime 호환 (Web Crypto). httpOnly 쿠키와 짝지어 SSR/RSC 양쪽에서 사용.
@@ -214,7 +214,7 @@ export async function verifyRefresh(token: string): Promise<RefreshPayload> {
 }
 ```
 
-- [ ] **2.2 테스트**
+- [x] **2.2 테스트**
 
 ```ts
 // tests/auth/jwt.test.ts
@@ -241,7 +241,7 @@ describe("jwt", () => {
 });
 ```
 
-- [ ] **2.3 커밋**
+- [x] **2.3 커밋**
 
 ```bash
 pnpm test tests/auth/jwt.test.ts
@@ -257,7 +257,7 @@ git commit -m "feat(auth): jose access/refresh JWT primitives"
 
 ### Steps
 
-- [ ] **3.1 cookies.ts**
+- [x] **3.1 cookies.ts**
 
 ```ts
 // auth 쿠키 도우미. Server Action / Route Handler / RSC 어디서나 같은 키 사용.
@@ -308,7 +308,7 @@ export async function readRefreshCookie() {
 }
 ```
 
-- [ ] **3.2 tokens.ts**
+- [x] **3.2 tokens.ts**
 
 ```ts
 // 일회용 토큰 (이메일 인증, 비밀번호 재설정) 공용 로직.
@@ -386,7 +386,7 @@ export async function consumePasswordReset(plain: string) {
 }
 ```
 
-- [ ] **3.3 커밋**
+- [x] **3.3 커밋**
 
 ```bash
 git add src/server/auth/cookies.ts src/server/auth/tokens.ts
@@ -401,7 +401,7 @@ git commit -m "feat(auth): cookie helpers + single-use token issue/consume"
 
 ### Steps
 
-- [ ] **4.1 session.ts**
+- [x] **4.1 session.ts**
 
 ```ts
 // 세션 = refresh 토큰의 서버측 상태.
@@ -499,7 +499,7 @@ export async function revokeAllForUser(userId: string) {
 }
 ```
 
-- [ ] **4.2 테스트 `tests/auth/session.test.ts`**
+- [x] **4.2 테스트 `tests/auth/session.test.ts`**
 
 ```ts
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
@@ -567,7 +567,7 @@ describe("session rotation", () => {
 });
 ```
 
-- [ ] **4.3 커밋**
+- [x] **4.3 커밋**
 
 ```bash
 pnpm test tests/auth/session.test.ts
@@ -583,7 +583,7 @@ git commit -m "feat(auth): session rotation with reuse detection"
 
 ### Steps
 
-- [ ] **5.1 transport.ts**
+- [x] **5.1 transport.ts**
 
 ```ts
 // Mailpit 은 인증 없는 SMTP 1025. 운영에서는 SES/SendGrid 등으로 교체.
@@ -597,7 +597,7 @@ export const transporter = nodemailer.createTransport({
 });
 ```
 
-- [ ] **5.2 templates/verify-email.tsx**
+- [x] **5.2 templates/verify-email.tsx**
 
 ```tsx
 import {
@@ -634,7 +634,7 @@ export default function VerifyEmail({ nickname, verifyUrl }: VerifyEmailProps) {
 }
 ```
 
-- [ ] **5.3 templates/reset-password.tsx**
+- [x] **5.3 templates/reset-password.tsx**
 
 ```tsx
 import {
@@ -671,7 +671,7 @@ export default function ResetPassword({ nickname, resetUrl }: ResetPasswordProps
 }
 ```
 
-- [ ] **5.4 send.ts**
+- [x] **5.4 send.ts**
 
 ```ts
 // React Email 컴포넌트를 HTML 문자열로 렌더하고 nodemailer 로 발송.
@@ -712,7 +712,7 @@ export async function sendResetPasswordEmail(p: {
 }
 ```
 
-- [ ] **5.5 커밋**
+- [x] **5.5 커밋**
 
 ```bash
 git add src/server/mail/
@@ -727,7 +727,7 @@ git commit -m "feat(mail): mailpit transport + verify/reset email templates"
 
 ### Steps
 
-- [ ] **6.1 입력 스키마 + Action 본문**
+- [x] **6.1 입력 스키마 + Action 본문**
 
 ```ts
 "use server";
@@ -885,7 +885,7 @@ export async function resetPasswordAction(_prev: ActionState, formData: FormData
 }
 ```
 
-- [ ] **6.2 커밋**
+- [x] **6.2 커밋**
 
 ```bash
 git add src/server/actions/auth.ts
@@ -900,7 +900,7 @@ git commit -m "feat(auth): server actions for sign-up/in/out + email verify + pa
 
 ### Steps
 
-- [ ] **7.1 refresh Route Handler**
+- [x] **7.1 refresh Route Handler**
 
 ```ts
 // /api/auth/refresh — POST.
@@ -923,7 +923,7 @@ export async function POST() {
 }
 ```
 
-- [ ] **7.2 middleware**
+- [x] **7.2 middleware**
 
 ```ts
 // Next.js middleware — 보호 경로에 access 쿠키가 있는지만 검사.
@@ -949,7 +949,7 @@ export const config = {
 };
 ```
 
-- [ ] **7.3 current-user.ts**
+- [x] **7.3 current-user.ts**
 
 ```ts
 // RSC / Server Action 에서 사용할 현재 user 조회 도우미.
@@ -981,7 +981,7 @@ export const getCurrentUser = cache(async () => {
 });
 ```
 
-- [ ] **7.4 context.ts 수정**
+- [x] **7.4 context.ts 수정**
 
 ```ts
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
@@ -996,7 +996,7 @@ export async function createContext(_opts: FetchCreateContextFnOptions) {
 export type Context = Awaited<ReturnType<typeof createContext>>;
 ```
 
-- [ ] **7.5 trpc.ts 수정 — protectedProcedure / adminProcedure**
+- [x] **7.5 trpc.ts 수정 — protectedProcedure / adminProcedure**
 
 ```ts
 import { initTRPC, TRPCError } from "@trpc/server";
@@ -1019,7 +1019,7 @@ export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 });
 ```
 
-- [ ] **7.6 커밋**
+- [x] **7.6 커밋**
 
 ```bash
 git add src/app/api/auth/refresh/route.ts src/middleware.ts \
@@ -1037,7 +1037,7 @@ git commit -m "feat(auth): refresh route + middleware guard + protected/admin pr
 
 ### Steps
 
-- [ ] **8.1 SignUpForm `src/components/auth/sign-up-form.tsx`**
+- [x] **8.1 SignUpForm `src/components/auth/sign-up-form.tsx`**
 
 ```tsx
 "use client";
@@ -1082,7 +1082,7 @@ export function SignUpForm() {
 }
 ```
 
-- [ ] **8.2 SignInForm `src/components/auth/sign-in-form.tsx`**
+- [x] **8.2 SignInForm `src/components/auth/sign-in-form.tsx`**
 
 ```tsx
 "use client";
@@ -1113,11 +1113,11 @@ export function SignInForm() {
 }
 ```
 
-- [ ] **8.3 ForgotPasswordForm / ResetPasswordForm**
+- [x] **8.3 ForgotPasswordForm / ResetPasswordForm**
 
 비슷한 패턴으로 `requestPasswordResetAction`, `resetPasswordAction` 을 `useActionState` 로 묶는다. (생략 — 위 SignInForm 형태를 그대로 따라간다.)
 
-- [ ] **8.4 페이지들**
+- [x] **8.4 페이지들**
 
 ```tsx
 // src/app/[locale]/(auth)/sign-up/page.tsx
@@ -1167,7 +1167,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ t
 
 forgot-password / reset-password 페이지는 ForgotPasswordForm / ResetPasswordForm 을 마운트.
 
-- [ ] **8.5 로그아웃 버튼 (어디든 헤더)**
+- [x] **8.5 로그아웃 버튼 (어디든 헤더)**
 
 ```tsx
 import { signOutAction } from "@/server/actions/auth";
@@ -1181,7 +1181,7 @@ export function SignOutButton() {
 }
 ```
 
-- [ ] **8.6 수동 검증 시나리오**
+- [x] **8.6 수동 검증 시나리오**
 
 1. `/ko/sign-up` 회원가입 → Mailpit `http://localhost:8025` 에서 메일 수신 확인.
 2. 메일의 인증 링크 클릭 → 인증 완료 메시지.
@@ -1189,7 +1189,7 @@ export function SignOutButton() {
 4. `.env` 의 `JWT_ACCESS_TTL=30` 으로 임시 단축 후 30초 대기 → 보호된 페이지 접근 시 자동 refresh 동작 확인.
 5. 같은 refresh 두 번 사용 → 두 번째에 user 전체 세션 revoke.
 
-- [ ] **8.7 커밋**
+- [x] **8.7 커밋**
 
 ```bash
 git add src/components/auth/ src/app/\[locale\]/\(auth\)/
@@ -1200,11 +1200,11 @@ git commit -m "feat(auth): sign-up/in/out + email verify + password reset pages"
 
 ## 마일스톤 종료 체크리스트
 
-- [ ] `pnpm test` 의 password / jwt / session 통과.
-- [ ] 회원가입 → Mailpit 메일 → 인증 → 로그인 → 보호 페이지 접근 정상.
-- [ ] access 만료 후 자동 refresh 회전 동작.
-- [ ] 같은 refresh 두 번째 사용 시 user 전체 세션 revoke (DB 확인).
-- [ ] 모든 새 파일에 한국어 주석.
+- [x] `pnpm test` 의 password / jwt / session 통과.
+- [x] 회원가입 → Mailpit 메일 → 인증 → 로그인 → 보호 페이지 접근 정상.
+- [x] access 만료 후 자동 refresh 회전 동작.
+- [x] 같은 refresh 두 번째 사용 시 user 전체 세션 revoke (DB 확인).
+- [x] 모든 새 파일에 한국어 주석.
 
 ---
 
