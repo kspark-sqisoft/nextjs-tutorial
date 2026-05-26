@@ -1,0 +1,14 @@
+node_modules
+.next
+.turbo
+.omc
+dist
+coverage
+.env
+.env.*.local
+*.log
+.DS_Store
+.idea
+.vscode
+.pnpm-store
+next-env.d.ts

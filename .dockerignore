@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.turbo
+coverage
+Dockerfile*
+compose*.yml
+docs
+.env
+.env.*.local

@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* shadcn/ui 호환 디자인 토큰은 마일스톤 9 에서 정식 추가한다.
+   현재는 최소 셋업: 시스템 색상 스킴만 선언. */
+:root {
+  color-scheme: light dark;
+}
+
+html,
+body {
+  height: 100%;
+}
