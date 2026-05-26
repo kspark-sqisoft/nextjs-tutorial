@@ -7,7 +7,7 @@ import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { TRPCError } from "@trpc/server";
 import { env } from "@/lib/env";
-import { s3 } from "./s3";
+import { s3, s3Public } from "./s3";
 import { UPLOAD_CONSTRAINTS, type UploadKind } from "./constraints";
 
 const PREFIX: Record<UploadKind, string> = {
@@ -74,7 +74,10 @@ export async function requestUpload(p: {
     Key: objectKey,
     ContentType: p.mime,
   });
-  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+  // 브라우저가 직접 PUT 할 URL 이므로 브라우저가 접근 가능한 호스트(S3_PUBLIC_URL)로 서명한다.
+  const uploadUrl = await getSignedUrl(s3Public, command, {
+    expiresIn: 300,
+  });
   return {
     uploadUrl,
     objectKey,
@@ -88,5 +91,6 @@ export async function presignedGet(objectKey: string) {
     Bucket: env.S3_BUCKET,
     Key: objectKey,
   });
-  return getSignedUrl(s3, command, { expiresIn: 60 });
+  // 다운로드도 브라우저 접근이라 s3Public 사용.
+  return getSignedUrl(s3Public, command, { expiresIn: 60 });
 }
