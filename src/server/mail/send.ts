@@ -11,8 +11,9 @@ export async function sendVerifyEmail(p: {
   nickname: string;
   token: string;
 }) {
-  // i18n 도입(M9) 전이라 ko 경로 고정. 나중에 NextIntl Link 의 url 헬퍼로 교체 권장.
-  const verifyUrl = `${env.NEXT_PUBLIC_APP_URL}/ko/verify-email?token=${encodeURIComponent(p.token)}`;
+  // M9 에서 [locale] segment 가 도입되면 NextIntl Link/url 헬퍼로 교체.
+  // 현재는 평탄 경로 /verify-email 을 직접 사용.
+  const verifyUrl = `${env.NEXT_PUBLIC_APP_URL}/verify-email?token=${encodeURIComponent(p.token)}`;
   const html = await render(
     VerifyEmail({ nickname: p.nickname, verifyUrl }),
   );
@@ -29,7 +30,7 @@ export async function sendResetPasswordEmail(p: {
   nickname: string;
   token: string;
 }) {
-  const resetUrl = `${env.NEXT_PUBLIC_APP_URL}/ko/reset-password?token=${encodeURIComponent(p.token)}`;
+  const resetUrl = `${env.NEXT_PUBLIC_APP_URL}/reset-password?token=${encodeURIComponent(p.token)}`;
   const html = await render(
     ResetPassword({ nickname: p.nickname, resetUrl }),
   );
