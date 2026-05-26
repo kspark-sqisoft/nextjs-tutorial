@@ -22,32 +22,36 @@
 
 ## 마일스톤 개요
 
-| # | 마일스톤 | 핵심 산출물 | 학습 토픽 |
-|---|---|---|---|
-| 1 | 부트스트랩 | Next.js 15 + Tailwind v4 + shadcn + Drizzle + tRPC + zod + i18n + `compose.dev.yml` 스켈레톤 | 초기 셋업, Docker 핫리로드 |
-| 2 | DB 스키마 v1 | users, sessions, email_verifications, password_resets + 마이그레이션 | Drizzle 스키마/마이그레이션, citext, enum |
-| 3 | 인증 | argon2, jose, 쿠키, 회전, 회원가입/로그인/로그아웃/리프레시 + Mailpit 인증 메일 | `useActionState`, Server Actions, JWT 회전, React Email |
-| 4 | 프로필 + Presigned 업로드 | 아바타 업로드 풀 흐름 | MinIO Presigned PUT, attachments 모델 |
-| 5 | 글 도메인 | posts/categories/tags/attachments + Tiptap + 인라인 이미지 + CRUD | RSC fetch, Tiptap 커스텀 노드, revalidatePath |
-| 6 | 상호작용 | 댓글/좋아요/북마크 + `useOptimistic` 3종 | `useOptimistic`, tRPC mutation |
-| 7 | 탐색 | PG Full-text Search + 태그/카테고리 필터 + 무한 스크롤 + Suspense | `useInfiniteQuery`, Suspense, tsvector |
-| 8 | 관리자 | ADMIN 라우트, 유저/글 관리 | RBAC, `requireAdmin` 미들웨어 |
-| 9 | 마감 | View Transitions, 다크모드, i18n 메시지 완비 | `unstable_ViewTransition`, next-themes, next-intl |
-| 10 | 테스트 & 프로덕션 Docker | Vitest 단위 테스트, `Dockerfile.prod`, `compose.prod.yml` 빌드 | Vitest, 멀티 stage Docker, standalone |
+| #   | 마일스톤                  | 핵심 산출물                                                                                  | 학습 토픽                                               |
+| --- | ------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| 1   | 부트스트랩                | Next.js 15 + Tailwind v4 + shadcn + Drizzle + tRPC + zod + i18n + `compose.dev.yml` 스켈레톤 | 초기 셋업, Docker 핫리로드                              |
+| 2   | DB 스키마 v1              | users, sessions, email_verifications, password_resets + 마이그레이션                         | Drizzle 스키마/마이그레이션, citext, enum               |
+| 3   | 인증                      | argon2, jose, 쿠키, 회전, 회원가입/로그인/로그아웃/리프레시 + Mailpit 인증 메일              | `useActionState`, Server Actions, JWT 회전, React Email |
+| 4   | 프로필 + Presigned 업로드 | 아바타 업로드 풀 흐름                                                                        | MinIO Presigned PUT, attachments 모델                   |
+| 5   | 글 도메인                 | posts/categories/tags/attachments + Tiptap + 인라인 이미지 + CRUD                            | RSC fetch, Tiptap 커스텀 노드, revalidatePath           |
+| 6   | 상호작용                  | 댓글/좋아요/북마크 + `useOptimistic` 3종                                                     | `useOptimistic`, tRPC mutation                          |
+| 7   | 탐색                      | PG Full-text Search + 태그/카테고리 필터 + 무한 스크롤 + Suspense                            | `useInfiniteQuery`, Suspense, tsvector                  |
+| 8   | 관리자                    | ADMIN 라우트, 유저/글 관리                                                                   | RBAC, `requireAdmin` 미들웨어                           |
+| 9   | 마감                      | View Transitions, 다크모드, i18n 메시지 완비                                                 | `unstable_ViewTransition`, next-themes, next-intl       |
+| 10  | 테스트 & 프로덕션 Docker  | Vitest 단위 테스트, `Dockerfile.prod`, `compose.prod.yml` 빌드                               | Vitest, 멀티 stage Docker, standalone                   |
 
 ---
 
 ## 마일스톤 1 — 부트스트랩
 
+> **상세 sub-plan**: [./plans/M1-bootstrap.md](./plans/M1-bootstrap.md)
+
 **목표:** `pnpm dev` 가 Docker 컨테이너 안에서 핫리로드와 함께 동작하고, `localhost:3000` 에서 빈 홈페이지가 렌더링된다. PostgreSQL · MinIO · Mailpit · drizzle-studio 가 컨테이너로 떠 있고, tRPC `health.ping` procedure 가 응답한다.
 
 **Definition of Done (DoD):**
+
 - `docker compose -f compose.dev.yml up --build` 으로 모든 컨테이너 healthy.
 - 브라우저에서 `/` 가 Tailwind 가 적용된 페이지를 보여준다.
 - `/api/trpc/health.ping` 이 `{ "result": { "data": "pong" } }` 류 응답.
 - 호스트에서 `.tsx` 파일을 수정하면 컨테이너 내 Next dev 가 즉시 반영.
 
 **Files:**
+
 - Create: `package.json`, `pnpm-workspace.yaml`(생략 가능), `tsconfig.json`, `next.config.ts`, `postcss.config.mjs`, `tailwind.config.ts`, `components.json`(shadcn), `drizzle.config.ts`, `vitest.config.ts`(다음 마일스톤 대비 빈 셋업), `.env.example`, `.gitignore`, `.dockerignore`
 - Create: `compose.dev.yml`, `Dockerfile.dev`
 - Create: `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/globals.css`
@@ -59,9 +63,10 @@
 
 ### 단계
 
-- [ ] **Step 1.1: `.gitignore` / `.dockerignore` 작성**
+- [x] **Step 1.1: `.gitignore` / `.dockerignore` 작성**
 
 `D:\Study\NextJS\nextjs-tutorial\.gitignore`
+
 ```gitignore
 node_modules
 .next
@@ -78,6 +83,7 @@ coverage
 ```
 
 `D:\Study\NextJS\nextjs-tutorial\.dockerignore`
+
 ```dockerignore
 node_modules
 .next
@@ -89,7 +95,7 @@ compose*.yml
 docs
 ```
 
-- [ ] **Step 1.2: `package.json` 작성**
+- [x] **Step 1.2: `package.json` 작성**
 
 ```json
 {
@@ -149,7 +155,7 @@ docs
 
 > 버전은 이 시점의 최신 안정 버전 기준. `pnpm install` 후 `pnpm-lock.yaml` 이 생성되면 그걸 신뢰한다.
 
-- [ ] **Step 1.3: `tsconfig.json` 작성**
+- [x] **Step 1.3: `tsconfig.json` 작성**
 
 ```json
 {
@@ -180,7 +186,7 @@ docs
 }
 ```
 
-- [ ] **Step 1.4: `next.config.ts` 작성**
+- [x] **Step 1.4: `next.config.ts` 작성**
 
 ```ts
 import type { NextConfig } from "next";
@@ -205,9 +211,10 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 ```
 
-- [ ] **Step 1.5: Tailwind v4 + PostCSS 설정**
+- [x] **Step 1.5: Tailwind v4 + PostCSS 설정**
 
 `postcss.config.mjs`
+
 ```js
 // Tailwind v4 의 공식 PostCSS 플러그인.
 export default {
@@ -216,6 +223,7 @@ export default {
 ```
 
 `tailwind.config.ts`
+
 ```ts
 import type { Config } from "tailwindcss";
 
@@ -229,6 +237,7 @@ export default config;
 ```
 
 `src/app/globals.css`
+
 ```css
 @import "tailwindcss";
 
@@ -243,7 +252,7 @@ body {
 }
 ```
 
-- [ ] **Step 1.6: 환경변수 검증 모듈 `src/lib/env.ts`**
+- [x] **Step 1.6: 환경변수 검증 모듈 `src/lib/env.ts`**
 
 ```ts
 // 학습용: 부팅 시점에 환경변수를 zod 로 강제 검증한다.
@@ -275,9 +284,10 @@ export const env = Env.parse(process.env);
 export type Env = z.infer<typeof Env>;
 ```
 
-- [ ] **Step 1.7: tRPC 기본 셋업**
+- [x] **Step 1.7: tRPC 기본 셋업**
 
 `src/server/trpc/trpc.ts`
+
 ```ts
 // tRPC 초기화 — context 와 transformer(superjson) 만 지정.
 // 권한 미들웨어는 마일스톤 3 에서 추가한다.
@@ -294,6 +304,7 @@ export const publicProcedure = t.procedure;
 ```
 
 `src/server/trpc/context.ts`
+
 ```ts
 // HTTP 요청 → tRPC context 생성.
 // 지금은 비어 있지만, 마일스톤 3 에서 user/세션을 채운다.
@@ -306,6 +317,7 @@ export type Context = Awaited<ReturnType<typeof createContext>>;
 ```
 
 `src/server/trpc/routers/health.ts`
+
 ```ts
 // 부팅 검증용. 라우터 구조 학습 목적.
 import { publicProcedure, router } from "../trpc";
@@ -316,6 +328,7 @@ export const healthRouter = router({
 ```
 
 `src/server/trpc/routers/_app.ts`
+
 ```ts
 // 모든 도메인 라우터를 여기에 합친다.
 import { router } from "../trpc";
@@ -329,6 +342,7 @@ export type AppRouter = typeof appRouter;
 ```
 
 `src/app/api/trpc/[trpc]/route.ts`
+
 ```ts
 // App Router 에 fetch 어댑터로 tRPC 를 마운트.
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
@@ -346,9 +360,10 @@ const handler = (req: Request) =>
 export { handler as GET, handler as POST };
 ```
 
-- [ ] **Step 1.8: 최소 페이지 + Provider**
+- [x] **Step 1.8: 최소 페이지 + Provider**
 
 `src/components/providers.tsx`
+
 ```tsx
 "use client";
 // 클라이언트 측 Provider 모음. 지금은 TanStack Query 만.
@@ -364,6 +379,7 @@ export function Providers({ children }: PropsWithChildren) {
 ```
 
 `src/app/layout.tsx`
+
 ```tsx
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
@@ -381,7 +397,11 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   // i18n 은 마일스톤 9 에서 [locale] segment 로 정식 도입. 지금은 ko 고정.
   return (
     <html lang="ko" suppressHydrationWarning>
@@ -394,6 +414,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```
 
 `src/app/page.tsx`
+
 ```tsx
 // 부팅 검증 페이지. 마일스톤 5 에서 진짜 피드로 교체된다.
 export default function HomePage() {
@@ -408,9 +429,10 @@ export default function HomePage() {
 }
 ```
 
-- [ ] **Step 1.9: Drizzle 설정 (스키마는 비워두기)**
+- [x] **Step 1.9: Drizzle 설정 (스키마는 비워두기)**
 
 `drizzle.config.ts`
+
 ```ts
 // 마이그레이션 산출물 위치와 DB 연결 정보를 drizzle-kit 에 알려준다.
 import { defineConfig } from "drizzle-kit";
@@ -427,7 +449,7 @@ export default defineConfig({
 
 > 스키마 파일은 마일스톤 2 에서 추가한다. 지금은 `src/server/db/schema/.gitkeep` 만 생성.
 
-- [ ] **Step 1.10: `.env.example` 작성**
+- [x] **Step 1.10: `.env.example` 작성**
 
 ```dotenv
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -461,7 +483,7 @@ SUPPORTED_LOCALES=ko,en
 
 > 실제 `.env` 파일은 위 내용을 복사해 만든다. `.gitignore` 에 포함되어 있으므로 안전.
 
-- [ ] **Step 1.11: `Dockerfile.dev`**
+- [x] **Step 1.11: `Dockerfile.dev`**
 
 ```dockerfile
 # 개발용 컨테이너: 의존성만 미리 설치하고, 소스는 bind mount 로 갈아끼운다.
@@ -485,7 +507,7 @@ EXPOSE 3000
 CMD ["pnpm", "dev"]
 ```
 
-- [ ] **Step 1.12: `compose.dev.yml`**
+- [x] **Step 1.12: `compose.dev.yml`**
 
 ```yaml
 # 개발용 — bind mount 로 핫리로드, 의존성은 컨테이너의 node_modules 를 유지(named volume).
@@ -594,7 +616,7 @@ volumes:
   next_cache:
 ```
 
-- [ ] **Step 1.13: shadcn 초기화 안내 파일 `components.json`**
+- [x] **Step 1.13: shadcn 초기화 안내 파일 `components.json`**
 
 ```json
 {
@@ -621,15 +643,16 @@ volumes:
 
 > 실제 컴포넌트는 마일스톤 9 에서 `pnpm dlx shadcn@latest add button input ...` 으로 필요할 때 추가.
 
-- [ ] **Step 1.14: 빌드 & 기동**
+- [x] **Step 1.14: 빌드 & 기동**
 
 호스트에서 실행:
+
 ```bash
 cp .env.example .env
 docker compose -f compose.dev.yml up --build
 ```
 
-- [ ] **Step 1.15: 수동 검증**
+- [x] **Step 1.15: 수동 검증**
 
 1. `http://localhost:3000` → "학습용 블로그 🚀" 페이지 확인.
 2. `curl 'http://localhost:3000/api/trpc/health.ping?batch=1&input=%7B%220%22%3A%7B%7D%7D'` → `"pong"` 포함 응답.
@@ -637,7 +660,7 @@ docker compose -f compose.dev.yml up --build
 4. `http://localhost:9001` → MinIO 콘솔 (minioadmin / minioadmin) 로그인, `blog` 버킷 존재 확인.
 5. `src/app/page.tsx` 의 텍스트를 수정 → 브라우저 자동 리로드 확인.
 
-- [ ] **Step 1.16: 커밋**
+- [x] **Step 1.16: 커밋**
 
 ```bash
 git init
@@ -649,11 +672,14 @@ git commit -m "feat(bootstrap): Next.js 15 + Docker dev compose + tRPC health"
 
 ## 마일스톤 2 — DB 스키마 v1 (인증 도메인)
 
+> **상세 sub-plan**: [./plans/M2-db-schema.md](./plans/M2-db-schema.md)
+
 **목표:** users / sessions / email_verifications / password_resets 4개 테이블 + 마이그레이션 파일이 생성·적용되어 `psql` 에서 조회 가능. Drizzle 쿼리로 INSERT/SELECT 가 동작.
 
 **DoD:** `pnpm db:generate` → SQL 파일 생성 → `pnpm db:migrate` 적용 → drizzle-studio 에서 4개 테이블 시각 확인.
 
 **Files:**
+
 - Create: `src/server/db/client.ts` (postgres.js + drizzle 인스턴스)
 - Create: `src/server/db/schema/users.ts`
 - Create: `src/server/db/schema/sessions.ts`
@@ -674,6 +700,7 @@ git commit -m "feat(bootstrap): Next.js 15 + Docker dev compose + tRPC health"
 - [ ] 커밋: `feat(db): users/sessions/tokens schema + initial migration`.
 
 ### 검증 SQL
+
 ```sql
 \dt
 SELECT column_name, data_type FROM information_schema.columns WHERE table_name='users';
@@ -683,15 +710,19 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ## 마일스톤 3 — 인증 (회원가입/로그인/로그아웃/리프레시 + 이메일 인증)
 
+> **상세 sub-plan**: [./plans/M3-auth.md](./plans/M3-auth.md)
+
 **목표:** 회원가입 → Mailpit 인증 메일 → 로그인 → access/refresh httpOnly 쿠키 발급 → 보호된 페이지 접근 → access 만료 시 자동 refresh 회전 → 로그아웃까지 풀 플로우. `useActionState` + `useFormStatus` 가 회원가입/로그인 폼에서 학습된다.
 
 **DoD:**
+
 - Mailpit UI 에서 인증 메일 수신·클릭 → `email_verified_at` 갱신.
 - 로그인 후 DevTools 에 access/refresh 쿠키 두 개 확인.
 - access 강제 만료(또는 짧은 TTL) 후 보호 API 호출 → `/api/auth/refresh` 가 회전하고 새 쿠키 발급.
 - refresh 재사용(같은 토큰으로 두 번째 회전 시도) 시 해당 user 의 모든 세션이 revoke 됨.
 
 **Files:**
+
 - Create: `src/server/auth/password.ts` — argon2id 해시/검증.
 - Create: `src/server/auth/jwt.ts` — jose 로 access/refresh 발급·검증.
 - Create: `src/server/auth/cookies.ts` — httpOnly, Secure, SameSite=Lax 쿠키 set/clear.
@@ -740,11 +771,14 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ## 마일스톤 4 — 프로필 + MinIO Presigned 업로드
 
+> **상세 sub-plan**: [./plans/M4-profile-upload.md](./plans/M4-profile-upload.md)
+
 **목표:** 로그인된 사용자가 닉네임/소개를 수정하고, 아바타 이미지를 presigned PUT 으로 직접 MinIO 에 업로드한다. MinIO 콘솔에서 객체 확인, 프로필 페이지에서 즉시 노출.
 
 **DoD:** `/me` 에서 아바타 변경 → 새 객체가 MinIO `blog/avatars/...` 에 저장 → 페이지 새로고침 시 변경된 이미지 노출.
 
 **Files:**
+
 - Create: `src/server/db/schema/attachments.ts` — attachments 테이블 (enum 포함). 마이그레이션 추가.
 - Modify: `src/server/db/schema/users.ts` — `avatar_attachment_id` 또는 그냥 `avatar_key` 유지 (PRD 따라 `avatar_key`).
 - Create: `src/server/storage/s3.ts` — S3 client (`endpoint: env.S3_ENDPOINT`, `forcePathStyle: true`).
@@ -786,11 +820,14 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ## 마일스톤 5 — 글 도메인 (CRUD + Tiptap + 첨부)
 
+> **상세 sub-plan**: [./plans/M5-posts.md](./plans/M5-posts.md)
+
 **목표:** 글 작성 페이지에서 Tiptap 으로 본문 작성, 본문 안에 이미지 삽입(presigned), 별도 첨부 파일 영역, 카테고리/태그 선택 → 저장. 목록/상세/수정/삭제.
 
 **DoD:** 로그인 후 `/posts/new` 에서 글 작성(본문 이미지 1개 + 첨부 1개) → 저장 → 목록/상세에서 정상 노출 → 작성자만 수정/삭제 가능 → 비작성자 접근 시 403 / 미노출.
 
 **Files:**
+
 - Create: `src/server/db/schema/posts.ts`, `categories.ts`, `tags.ts`, `post_tags.ts` (조인). 마이그레이션 추가. `posts.search_tsv` 는 마일스톤 7 에서 추가하므로 우선 nullable 컬럼 또는 생략 가능 — 단, 후행 ALTER 보다 처음부터 생성 컬럼으로 두는 게 편하다.
 - Create: `src/server/trpc/routers/post.ts` — `list`(temp: 최신순 페이지네이션, 무한 스크롤은 M7), `bySlug`, `create`, `update`, `delete`, `requestAttachmentUpload`, `confirmAttachment`.
 - Create: `src/server/actions/post.ts` — `createPostAction`, `updatePostAction`, `deletePostAction` (Server Action + `revalidatePath`/`revalidateTag`).
@@ -827,11 +864,14 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ## 마일스톤 6 — 상호작용 (댓글/좋아요/북마크 + `useOptimistic`)
 
+> **상세 sub-plan**: [./plans/M6-interactions.md](./plans/M6-interactions.md)
+
 **목표:** 글 상세에서 댓글 작성·삭제·대댓글, 좋아요/북마크 토글이 클릭 즉시 UI 에 반영(낙관적 업데이트)되고 실패 시 롤백. 세 곳 모두 `useOptimistic` 학습.
 
 **DoD:** 의도적으로 mutation 에 `await new Promise(r=>setTimeout(r,1000))` 삽입해도 UI 는 즉시 반영 → 1초 후 서버 결과로 sync. 의도적으로 throw 하면 UI 가 원래대로 롤백.
 
 **Files:**
+
 - Create: `src/server/db/schema/comments.ts`, `likes.ts`, `bookmarks.ts`. 마이그레이션.
 - Create: `src/server/trpc/routers/comment.ts`, `like.ts`, `bookmark.ts`.
 - Modify: `_app.ts` — 세 라우터 등록.
@@ -850,7 +890,7 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 - [ ] **like.toggle**, **bookmark.toggle**: UPSERT 또는 INSERT ON CONFLICT DO NOTHING / DELETE 로 토글. 반환은 새 상태(`{liked: boolean, count: number}`).
 - [ ] **댓글 영역 RSC** + **Suspense** 로 감싸 글 상세 streaming 학습 (M3 의 글 상세 페이지 수정):
   ```tsx
-  <Suspense fallback={<CommentSkeleton/>}>
+  <Suspense fallback={<CommentSkeleton />}>
     <CommentList postId={post.id} />
   </Suspense>
   ```
@@ -874,11 +914,14 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ## 마일스톤 7 — 탐색 (검색 + 필터 + 무한 스크롤)
 
+> **상세 sub-plan**: [./plans/M7-discovery.md](./plans/M7-discovery.md)
+
 **목표:** 메인 피드와 검색 페이지에서 무한 스크롤이 동작하고, PostgreSQL Full-text Search 로 제목/본문 검색이 정상 동작. Suspense 로 첫 페이지는 SSR, 이후 페이지는 클라이언트 fetch.
 
 **DoD:** `/?tag=...`, `/?category=...`, `/search?q=...` 셋 다 무한 스크롤로 페이지가 증가하고, 검색은 한글/영문 모두 매칭.
 
 **Files:**
+
 - Modify: `post` 라우터 — `list(input: {cursor?, limit, tag?, category?})` 가 `useInfiniteQuery` 가 기대하는 `{items, nextCursor}` 반환.
 - Create: `post.search(input: {q, cursor?, limit})` — `WHERE search_tsv @@ websearch_to_tsquery('simple', $q)` + `ts_rank` 정렬.
 - Create: `src/components/post/post-feed.tsx` — Client Component: `trpc.post.list.useInfiniteQuery(...)`, IntersectionObserver 로 자동 다음 페이지.
@@ -903,11 +946,14 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ## 마일스톤 8 — 관리자 (ADMIN)
 
+> **상세 sub-plan**: [./plans/M8-admin.md](./plans/M8-admin.md)
+
 **목표:** ADMIN 사용자만 `/admin/*` 접근. 유저 목록/검색/비활성화, 글 목록/숨김/삭제.
 
 **DoD:** 일반 유저로 `/admin` 접근 시 redirect / 404. ADMIN 으로 유저 비활성화 → 해당 유저는 로그인 시 401, 글은 자동 숨김 처리.
 
 **Files:**
+
 - Modify: `src/server/trpc/trpc.ts` — `adminProcedure = protectedProcedure.use(({ctx,next}) => { if(ctx.user.role!=='ADMIN') throw FORBIDDEN; return next() })`.
 - Create: `src/server/trpc/routers/admin.ts` — `users.list/setActive`, `posts.list/setHidden`.
 - Create: `src/app/[locale]/(admin)/admin/layout.tsx` — ADMIN 가드(서버에서 `ctx.user.role !== 'ADMIN'` 이면 `notFound()`).
@@ -929,11 +975,14 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ## 마일스톤 9 — 마감 (View Transitions, 다크모드, i18n)
 
+> **상세 sub-plan**: [./plans/M9-finish.md](./plans/M9-finish.md)
+
 **목표:** shadcn 컴포넌트 정식 도입, 다크모드 토글 동작, 한/영 라우트 전환, 글 목록 → 상세 페이지 전환에 View Transitions 적용.
 
 **DoD:** 우상단 테마 토글 동작, `/ko/...` ↔ `/en/...` 전환 시 메시지 변경, 글 카드 → 상세 진입 시 부드러운 transition.
 
 **Files:**
+
 - Run: `pnpm dlx shadcn@latest init` → 이미 `components.json` 있으므로 update.
 - Run: `pnpm dlx shadcn@latest add button input textarea card dialog dropdown-menu form label sheet toast skeleton avatar tabs`.
 - Modify: `src/components/providers.tsx` — `<ThemeProvider attribute="class" defaultTheme="system">` (next-themes) + `<NextIntlClientProvider>` 래핑.
@@ -952,10 +1001,10 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 - [ ] **테마 토글**: Avatar 옆 `DropdownMenu` 에 light/dark/system 3옵션.
 - [ ] **View Transitions** 적용 예:
   ```tsx
-  import { unstable_ViewTransition as ViewTransition } from 'react';
+  import { unstable_ViewTransition as ViewTransition } from "react";
   <ViewTransition name={`post-${post.id}`}>
     <Card>...</Card>
-  </ViewTransition>
+  </ViewTransition>;
   ```
   글 카드와 상세 페이지의 같은 `name` 으로 묶기.
 - [ ] **CSS**: `::view-transition-old(*)` / `::view-transition-new(*)` 기본 트랜지션 학습.
@@ -965,14 +1014,18 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ## 마일스톤 10 — 테스트 & 프로덕션 Docker
 
+> **상세 sub-plan**: [./plans/M10-test-prod.md](./plans/M10-test-prod.md)
+
 **목표:** Vitest 단위 테스트로 핵심 서버 로직을 검증하고, `Dockerfile.prod` 멀티 stage 빌드로 standalone 이미지를 만들어 `compose.prod.yml` 로 띄운다.
 
 **DoD:**
+
 - `pnpm test` 통과 (최소 6~10개 테스트 케이스).
 - `docker compose -f compose.prod.yml up --build` 성공, 동일 시나리오(가입→로그인→글 작성) 동작.
 - 빌드된 app 이미지 크기 < 300MB.
 
 **Files:**
+
 - Create: `Dockerfile.prod`, `compose.prod.yml`.
 - Create: `src/app/api/health/route.ts` — `GET → 200 {status:'ok'}` (Docker HEALTHCHECK 용).
 - Create: `tests/auth/jwt.test.ts`, `tests/auth/session.test.ts`, `tests/storage/presign.test.ts`, `tests/trpc/post.test.ts`.
@@ -981,21 +1034,23 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 ### 작업 체크리스트
 
 - [ ] **vitest.config.ts**:
+
   ```ts
-  import { defineConfig } from 'vitest/config';
-  import react from '@vitejs/plugin-react';
-  import path from 'node:path';
+  import { defineConfig } from "vitest/config";
+  import react from "@vitejs/plugin-react";
+  import path from "node:path";
 
   export default defineConfig({
     plugins: [react()],
     test: {
-      environment: 'node',
-      setupFiles: ['./tests/setup.ts'],
-      include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
+      environment: "node",
+      setupFiles: ["./tests/setup.ts"],
+      include: ["tests/**/*.test.ts", "tests/**/*.test.tsx"],
     },
-    resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
+    resolve: { alias: { "@": path.resolve(__dirname, "src") } },
   });
   ```
+
 - [ ] **tests/auth/jwt.test.ts**:
   - access 발급 → 검증 → payload 일치.
   - 만료된 토큰 검증 시 throw.
@@ -1011,6 +1066,7 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
   - 비작성자 update 시 `FORBIDDEN`.
 - [ ] **/api/health route**: 200 응답 텍스트.
 - [ ] **Dockerfile.prod**:
+
   ```dockerfile
   # 1) deps
   FROM node:22-alpine AS deps
@@ -1044,6 +1100,7 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
     CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
   CMD ["node", "server.js"]
   ```
+
 - [ ] **compose.prod.yml**: dev 와 같은 postgres/minio/mailpit + app 서비스(prod 이미지) + `restart: unless-stopped`. bind mount 없음.
 - [ ] 빌드 검증: `docker compose -f compose.prod.yml build app` → `docker images` 로 크기 확인.
 - [ ] 가동 검증: 동일 풀 시나리오 통과.
@@ -1071,14 +1128,19 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 # MX <name> sub-plan
 
 ## Goal
+
 ## Files (Create/Modify/Test)
+
 ## Tasks
+
 ### Task 1
+
 - [ ] Step 1.1 ... (실패 테스트)
 - [ ] Step 1.2 ... (run; expect fail)
 - [ ] Step 1.3 ... (구현)
 - [ ] Step 1.4 ... (run; expect pass)
 - [ ] Step 1.5 ... (commit)
+
 ## Verification
 ```
 
