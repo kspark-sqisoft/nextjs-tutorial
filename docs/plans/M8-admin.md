@@ -10,10 +10,10 @@
 
 ## 사전 조건
 
-- [ ] M1~M7 완료.
-- [ ] `users.role` enum + `users.is_active` 컬럼 존재.
-- [ ] `adminProcedure` 가 `src/server/trpc/trpc.ts` 에서 export 되고 있음.
-- [ ] `ADMIN` 계정이 1개 이상 존재 (없으면 시드 스크립트 또는 psql 로 만든다).
+- [x] M1~M7 완료.
+- [x] `users.role` enum + `users.is_active` 컬럼 존재.
+- [x] `adminProcedure` 가 `src/server/trpc/trpc.ts` 에서 export 되고 있음.
+- [x] `ADMIN` 계정이 1개 이상 존재 (없으면 시드 스크립트 또는 psql 로 만든다).
 
 ---
 
@@ -54,7 +54,7 @@
 
 ### Steps
 
-- [ ] **1.1 `.env.example` 에 추가**
+- [x] **1.1 `.env.example` 에 추가**
 
 ```dotenv
 # 첫 실행에 사용할 ADMIN 시드 (있으면 1회 생성, 없으면 생략)
@@ -63,7 +63,7 @@ SEED_ADMIN_PASSWORD=admin1234
 SEED_ADMIN_NICKNAME=admin
 ```
 
-- [ ] **1.2 scripts/seed-admin.ts**
+- [x] **1.2 scripts/seed-admin.ts**
 
 ```ts
 // SEED_ADMIN_* 환경변수가 모두 있고 해당 이메일이 없을 때만 ADMIN 1명 생성.
@@ -98,13 +98,13 @@ async function main() {
 main().catch((e) => { console.error(e); process.exit(1); });
 ```
 
-- [ ] **1.3 package.json scripts**
+- [x] **1.3 package.json scripts**
 
 ```json
 "seed:admin": "tsx scripts/seed-admin.ts"
 ```
 
-- [ ] **1.4 실행 + 커밋**
+- [x] **1.4 실행 + 커밋**
 
 ```bash
 docker compose -f compose.dev.yml exec app pnpm seed:admin
@@ -120,7 +120,7 @@ git commit -m "feat(admin): seed-admin script for first ADMIN account"
 
 ### Steps
 
-- [ ] **2.1 admin.ts**
+- [x] **2.1 admin.ts**
 
 ```ts
 import { z } from "zod";
@@ -219,7 +219,7 @@ export const adminRouter = router({
 });
 ```
 
-- [ ] **2.2 `_app.ts` 갱신**
+- [x] **2.2 `_app.ts` 갱신**
 
 ```ts
 import { adminRouter } from "./admin";
@@ -230,7 +230,7 @@ export const appRouter = router({
 });
 ```
 
-- [ ] **2.3 커밋**
+- [x] **2.3 커밋**
 
 ```bash
 git add src/server/trpc/routers/admin.ts src/server/trpc/routers/_app.ts
@@ -245,7 +245,7 @@ git commit -m "feat(admin): users/posts admin trpc router"
 
 ### Steps
 
-- [ ] **3.1 admin layout (가드)**
+- [x] **3.1 admin layout (가드)**
 
 ```tsx
 // src/app/[locale]/(admin)/admin/layout.tsx
@@ -273,7 +273,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 }
 ```
 
-- [ ] **3.2 admin 대시보드**
+- [x] **3.2 admin 대시보드**
 
 ```tsx
 // src/app/[locale]/(admin)/admin/page.tsx
@@ -301,7 +301,7 @@ export default async function AdminDashboard() {
 }
 ```
 
-- [ ] **3.3 유저 페이지 (RSC + UserRow 자식)**
+- [x] **3.3 유저 페이지 (RSC + UserRow 자식)**
 
 ```tsx
 // src/app/[locale]/(admin)/admin/users/page.tsx
@@ -335,7 +335,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
 }
 ```
 
-- [ ] **3.4 글 페이지**
+- [x] **3.4 글 페이지**
 
 ```tsx
 // src/app/[locale]/(admin)/admin/posts/page.tsx
@@ -369,7 +369,7 @@ export default async function AdminPostsPage({ searchParams }: { searchParams: P
 }
 ```
 
-- [ ] **3.5 커밋**
+- [x] **3.5 커밋**
 
 ```bash
 git add src/app/\[locale\]/\(admin\)/
@@ -384,7 +384,7 @@ git commit -m "feat(admin): layout guard + dashboard/users/posts pages"
 
 ### Steps
 
-- [ ] **4.1 UserRow**
+- [x] **4.1 UserRow**
 
 ```tsx
 // src/components/admin/user-row.tsx
@@ -441,7 +441,7 @@ export function UserRow({ user }: { user: UserDTO }) {
 }
 ```
 
-- [ ] **4.2 PostRow**
+- [x] **4.2 PostRow**
 
 ```tsx
 // src/components/admin/post-row.tsx
@@ -499,7 +499,7 @@ export function PostRow({ post }: { post: PostDTO }) {
 }
 ```
 
-- [ ] **4.3 커밋**
+- [x] **4.3 커밋**
 
 ```bash
 git add src/components/admin/
@@ -512,7 +512,7 @@ git commit -m "feat(admin): UserRow + PostRow with useOptimistic toggles"
 
 ### Steps
 
-- [ ] **5.1 시나리오**
+- [x] **5.1 시나리오**
 
 1. 일반 USER 로 `/ko/admin` 접근 → 404.
 2. ADMIN 로그인 → `/ko/admin/users` 진입 → 본인 카드의 "비활성" 버튼은 시도 시 BAD_REQUEST.
@@ -524,10 +524,10 @@ git commit -m "feat(admin): UserRow + PostRow with useOptimistic toggles"
 
 ## 마일스톤 종료 체크리스트
 
-- [ ] `pnpm typecheck` 통과.
-- [ ] 일반 USER 가 `/admin` 접근 시 404.
-- [ ] 유저 비활성화 시 즉시 강제 로그아웃 (sessions revoke).
-- [ ] 글 숨김 후 비작성자에게 NOT_FOUND.
+- [x] `pnpm typecheck` 통과.
+- [x] 일반 USER 가 `/admin` 접근 시 404.
+- [x] 유저 비활성화 시 즉시 강제 로그아웃 (sessions revoke).
+- [x] 글 숨김 후 비작성자에게 NOT_FOUND.
 
 ---
 
