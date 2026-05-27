@@ -36,6 +36,11 @@ export default async function HomePage() {
               <Link href="/me" className="underline">
                 프로필
               </Link>
+              {me.role === "ADMIN" && (
+                <Link href="/admin" className="text-amber-600 underline">
+                  Admin
+                </Link>
+              )}
               <Link
                 href="/posts/new"
                 className="rounded bg-zinc-900 px-3 py-1 text-white dark:bg-zinc-100 dark:text-zinc-900"
