@@ -20,7 +20,7 @@ export default function VerifyEmail({ nickname, verifyUrl }: VerifyEmailProps) {
   return (
     <Html lang="ko">
       <Head />
-      <Preview>학습용 블로그 이메일 인증</Preview>
+      <Preview>BLOG 이메일 인증</Preview>
       <Body
         style={{
           fontFamily: "system-ui, -apple-system, sans-serif",

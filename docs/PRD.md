@@ -1,4 +1,4 @@
-# Next.js 학습용 블로그 PRD
+# Next.js BLOG PRD
 
 > **문서 목적**: Next.js 15+ / React 19 의 최신 패턴을 실제 동작하는 블로그 서비스를 만들며 학습하기 위한 제품 요구사항 문서(PRD).
 > 이 문서는 곧이어 작성할 **구현 계획(implementation plan)** 의 기준이 된다.

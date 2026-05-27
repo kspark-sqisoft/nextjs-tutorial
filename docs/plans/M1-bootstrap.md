@@ -455,7 +455,7 @@ import type { Metadata, Viewport } from "next";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "학습용 블로그",
+  title: "BLOG",
   description: "Next.js 15 + React 19 학습 프로젝트",
 };
 
@@ -488,7 +488,7 @@ export default function RootLayout({
 export default function HomePage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col items-center justify-center gap-4 p-8">
-      <h1 className="text-3xl font-semibold">학습용 블로그 🚀</h1>
+      <h1 className="text-3xl font-semibold">BLOG 🚀</h1>
       <p className="text-sm text-zinc-500">
         부트스트랩이 정상 동작 중입니다. 다음 마일스톤은 DB 스키마(M2)입니다.
       </p>
@@ -693,7 +693,7 @@ docker compose -f compose.dev.yml up --build
 
 | 항목 | 방법 |
 |---|---|
-| 홈 | `http://localhost:3000` → "학습용 블로그 🚀" |
+| 홈 | `http://localhost:3000` → "BLOG 🚀" |
 | tRPC | `curl 'http://localhost:3000/api/trpc/health.ping?batch=1&input=%7B%220%22%3A%7B%7D%7D'` → `"pong"` 포함 |
 | Mailpit | `http://localhost:8025` |
 | MinIO Console | `http://localhost:9001` (`minioadmin` / `minioadmin`), `blog` 버킷 존재 |

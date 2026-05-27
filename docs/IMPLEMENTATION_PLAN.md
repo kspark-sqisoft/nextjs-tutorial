@@ -1,8 +1,8 @@
-# Next.js 학습용 블로그 — 구현 계획 (Implementation Plan)
+# Next.js BLOG — 구현 계획 (Implementation Plan)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** `docs/PRD.md` 에 정의된 학습용 블로그를 10개의 마일스톤으로 나눠 단계적으로 구현한다. 각 마일스톤은 독립적으로 동작·검증 가능하며, PR 단위로 묶일 수 있다.
+**Goal:** `docs/PRD.md` 에 정의된 BLOG를 10개의 마일스톤으로 나눠 단계적으로 구현한다. 각 마일스톤은 독립적으로 동작·검증 가능하며, PR 단위로 묶일 수 있다.
 
 **Architecture:** Next.js 15 App Router(React 19) 단일 모놀리식 + tRPC 백엔드 + Drizzle/PostgreSQL + MinIO(S3 호환) + JWT(httpOnly cookie 회전) + Docker Compose(dev/prod 분리). 폼 제출은 Server Actions(+ `useActionState`), 클라이언트 상호작용은 tRPC mutation(+ `useOptimistic`), 조회는 RSC 또는 TanStack Query prefetch + Hydration.
 
@@ -386,7 +386,7 @@ import type { Metadata, Viewport } from "next";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "학습용 블로그",
+  title: "BLOG",
   description: "Next.js 15 + React 19 학습 프로젝트",
 };
 
@@ -420,7 +420,7 @@ export default function RootLayout({
 export default function HomePage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col items-center justify-center gap-4 p-8">
-      <h1 className="text-3xl font-semibold">학습용 블로그 🚀</h1>
+      <h1 className="text-3xl font-semibold">BLOG 🚀</h1>
       <p className="text-sm text-zinc-500">
         부트스트랩이 정상 동작 중입니다. 다음 마일스톤은 DB 스키마입니다.
       </p>
@@ -654,7 +654,7 @@ docker compose -f compose.dev.yml up --build
 
 - [x] **Step 1.15: 수동 검증**
 
-1. `http://localhost:3000` → "학습용 블로그 🚀" 페이지 확인.
+1. `http://localhost:3000` → "BLOG 🚀" 페이지 확인.
 2. `curl 'http://localhost:3000/api/trpc/health.ping?batch=1&input=%7B%220%22%3A%7B%7D%7D'` → `"pong"` 포함 응답.
 3. `http://localhost:8025` → Mailpit UI 접속.
 4. `http://localhost:9001` → MinIO 콘솔 (minioadmin / minioadmin) 로그인, `blog` 버킷 존재 확인.

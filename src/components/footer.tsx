@@ -29,7 +29,7 @@ export function Footer() {
                 aria-hidden
                 className="inline-block size-2 rounded-full bg-foreground"
               />
-              <span>학습용 블로그</span>
+              <span>BLOG</span>
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Next.js 15 와 React 19 의 최신 패턴을 실제로 만들며 익히기
@@ -122,7 +122,7 @@ export function Footer() {
 
         {/* 하단 카피라이트. */}
         <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border/40 pt-6 text-xs text-muted-foreground md:flex-row md:items-center">
-          <p>© {new Date().getFullYear()} 학습용 블로그</p>
+          <p>© {new Date().getFullYear()} BLOG</p>
           <p className="tabular-nums">
             Built with Next.js 15 · React 19 · Geist
           </p>

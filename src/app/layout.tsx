@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "학습용 블로그",
+  title: "BLOG",
   description: "Next.js 15 + React 19 학습 프로젝트",
 };
 

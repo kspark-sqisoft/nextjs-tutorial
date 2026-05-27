@@ -28,7 +28,7 @@ export async function Header() {
             aria-hidden
             className="inline-block size-2 rounded-full bg-foreground"
           />
-          <span>학습용 블로그</span>
+          <span>BLOG</span>
         </Link>
 
         {/* 메인 내비. */}

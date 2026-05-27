@@ -20,7 +20,7 @@ export async function sendVerifyEmail(p: {
   await transporter.sendMail({
     from: env.SMTP_FROM,
     to: p.to,
-    subject: "[학습용 블로그] 이메일 인증",
+    subject: "[BLOG] 이메일 인증",
     html,
   });
 }
@@ -37,7 +37,7 @@ export async function sendResetPasswordEmail(p: {
   await transporter.sendMail({
     from: env.SMTP_FROM,
     to: p.to,
-    subject: "[학습용 블로그] 비밀번호 재설정",
+    subject: "[BLOG] 비밀번호 재설정",
     html,
   });
 }

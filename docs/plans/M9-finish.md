@@ -394,7 +394,7 @@ export async function Header() {
   return (
     <header className="border-b">
       <nav className="mx-auto flex max-w-5xl items-center gap-4 p-4 text-sm">
-        <Link href="/" className="font-semibold">📒 학습용 블로그</Link>
+        <Link href="/" className="font-semibold">📒 BLOG</Link>
         <Link href="/" className="text-zinc-600 dark:text-zinc-400">{t("home")}</Link>
         {me && <Link href="/posts/new" className="text-zinc-600 dark:text-zinc-400">{t("write")}</Link>}
         {me && <Link href="/me/bookmarks" className="text-zinc-600 dark:text-zinc-400">{t("bookmarks")}</Link>}
