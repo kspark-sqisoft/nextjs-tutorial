@@ -422,6 +422,73 @@ export const postRouter = router({
       };
     }),
 
+  // 전체 검색 — PG Full-text Search.
+  // 학습 포인트:
+  //  - websearch_to_tsquery 는 자연어 문법 ("a b", OR, 따옴표) 지원.
+  //  - 'simple' configuration 은 stemming 없이 토큰화만 — 한/영 혼용에 적합.
+  //  - cursor: base64("rank|createdAtIso|id") 로 (ts_rank desc, createdAt desc, id desc) keyset.
+  search: publicProcedure
+    .input(
+      z.object({
+        q: z.string().min(1).max(80),
+        limit: z.number().int().min(1).max(50).default(10),
+        cursor: z.string().nullish(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const tsq = sql`websearch_to_tsquery('simple', ${input.q})`;
+      let cursorClause = sql``;
+      if (input.cursor) {
+        const decoded = Buffer.from(input.cursor, "base64").toString(
+          "utf8",
+        );
+        const [rank, iso, id] = decoded.split("|");
+        cursorClause = sql`AND (
+          ts_rank(p.search_tsv, ${tsq}), p.created_at, p.id
+        ) < (${Number(rank)}::float4, ${iso}::timestamptz, ${id}::uuid)`;
+      }
+      const rows = await db.execute<{
+        id: string;
+        title: string;
+        slug: string;
+        created_at: Date;
+        author_nickname: string;
+        author_avatar_key: string | null;
+        rank: number;
+      }>(sql`
+        SELECT
+          p.id, p.title, p.slug, p.created_at,
+          u.nickname AS author_nickname, u.avatar_key AS author_avatar_key,
+          ts_rank(p.search_tsv, ${tsq}) AS rank
+        FROM posts p
+        INNER JOIN users u ON u.id = p.author_id
+        WHERE p.is_hidden = false
+          AND p.is_published = true
+          AND p.search_tsv @@ ${tsq}
+          ${cursorClause}
+        ORDER BY ts_rank(p.search_tsv, ${tsq}) DESC, p.created_at DESC, p.id DESC
+        LIMIT ${input.limit + 1}
+      `);
+      const arr = Array.from(rows);
+      const items = arr.slice(0, input.limit).map((r) => ({
+        id: r.id,
+        title: r.title,
+        slug: r.slug,
+        createdAt: r.created_at,
+        authorNickname: r.author_nickname,
+        authorAvatarUrl: r.author_avatar_key
+          ? publicUrl(r.author_avatar_key)
+          : null,
+      }));
+      const next = arr[input.limit];
+      const nextCursor = next
+        ? Buffer.from(
+            `${next.rank}|${next.created_at.toISOString()}|${next.id}`,
+          ).toString("base64")
+        : null;
+      return { items, nextCursor };
+    }),
+
   listCategories: publicProcedure.query(async () => {
     return db.select().from(categories).orderBy(categories.name);
   }),
