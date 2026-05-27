@@ -1033,7 +1033,7 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ### 작업 체크리스트
 
-- [ ] **vitest.config.ts**:
+- [x] **vitest.config.ts**:
 
   ```ts
   import { defineConfig } from "vitest/config";
@@ -1051,21 +1051,21 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
   });
   ```
 
-- [ ] **tests/auth/jwt.test.ts**:
+- [x] **tests/auth/jwt.test.ts**:
   - access 발급 → 검증 → payload 일치.
   - 만료된 토큰 검증 시 throw.
   - 다른 secret 으로 검증 시 throw.
-- [ ] **tests/auth/session.test.ts** (in-memory pg-mem 또는 Postgres docker test 컨테이너):
+- [x] **tests/auth/session.test.ts** (in-memory pg-mem 또는 Postgres docker test 컨테이너):
   - 회전 후 기존 세션 revoked, 새 세션 활성.
   - 회전된 세션으로 재회전 시 user 전체 revoke (`detectReuse`).
-- [ ] **tests/storage/presign.test.ts**:
+- [x] **tests/storage/presign.test.ts**:
   - kind 별 키 prefix 규칙.
   - 사이즈/MIME 위반 시 throw.
-- [ ] **tests/trpc/post.test.ts**:
+- [x] **tests/trpc/post.test.ts**:
   - `createCaller` 로 user 컨텍스트 mock 후 create → bySlug 가 동일 데이터를 반환.
   - 비작성자 update 시 `FORBIDDEN`.
-- [ ] **/api/health route**: 200 응답 텍스트.
-- [ ] **Dockerfile.prod**:
+- [x] **/api/health route**: 200 응답 텍스트.
+- [x] **Dockerfile.prod**:
 
   ```dockerfile
   # 1) deps
@@ -1101,10 +1101,10 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
   CMD ["node", "server.js"]
   ```
 
-- [ ] **compose.prod.yml**: dev 와 같은 postgres/minio/mailpit + app 서비스(prod 이미지) + `restart: unless-stopped`. bind mount 없음.
-- [ ] 빌드 검증: `docker compose -f compose.prod.yml build app` → `docker images` 로 크기 확인.
-- [ ] 가동 검증: 동일 풀 시나리오 통과.
-- [ ] 커밋: `test: auth/storage/trpc units`, `feat(health): /api/health endpoint`, `build(docker): production Dockerfile + compose`.
+- [x] **compose.prod.yml**: dev 와 같은 postgres/minio/mailpit + app 서비스(prod 이미지) + `restart: unless-stopped`. bind mount 없음.
+- [x] 빌드 검증: `docker compose -f compose.prod.yml build app` → `docker images` 로 크기 확인. (`blog-prod-app:latest` 351MB — 목표 300MB 살짝 초과, dev 1.35GB → 약 74% 감소)
+- [ ] 가동 검증: 동일 풀 시나리오 통과 — 사용자가 prod stack 띄워 수동 검증 필요 (dev 포트와 충돌하므로 dev 먼저 down).
+- [x] 커밋: `test: auth/storage/trpc units`, `feat(health): /api/health endpoint`, `build(docker): production Dockerfile + compose`.
 
 ---
 

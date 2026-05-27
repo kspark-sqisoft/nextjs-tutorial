@@ -12,10 +12,10 @@
 
 ## 사전 조건
 
-- [ ] M1~M9 완료.
-- [ ] `compose.dev.yml` 의 postgres 가 5432 를 호스트에 노출.
-- [ ] `TEST_DATABASE_URL` 이 `.env` 에 설정됨 (M2 에서 함).
-- [ ] M1~M3 에 이미 작성된 일부 테스트(password / jwt / session / db schema / presign)가 그대로 동작.
+- [x] M1~M9 완료.
+- [x] `compose.dev.yml` 의 postgres 가 5432 를 호스트에 노출.
+- [x] `TEST_DATABASE_URL` 이 `.env` 에 설정됨 (M2 에서 함).
+- [x] M1~M3 에 이미 작성된 일부 테스트(password / jwt / session / db schema / presign)가 그대로 동작.
 
 ---
 
@@ -55,7 +55,7 @@
 
 ### Steps
 
-- [ ] **1.1 route.ts**
+- [x] **1.1 route.ts**
 
 ```ts
 // Docker HEALTHCHECK 용. DB 핑까지 포함해도 좋지만 학습 단순화로 200 만.
@@ -66,7 +66,7 @@ export function GET() {
 }
 ```
 
-- [ ] **1.2 검증/커밋**
+- [x] **1.2 검증/커밋**
 
 ```bash
 curl http://localhost:3000/api/health
@@ -82,7 +82,7 @@ git commit -m "feat(health): /api/health endpoint for docker healthcheck"
 
 ### Steps
 
-- [ ] **2.1 헬퍼: createCaller 로 user context mock**
+- [x] **2.1 헬퍼: createCaller 로 user context mock**
 
 ```ts
 // tests/helpers/caller.ts
@@ -96,7 +96,7 @@ export function publicCaller() {
 }
 ```
 
-- [ ] **2.2 post.test.ts**
+- [x] **2.2 post.test.ts**
 
 ```ts
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
@@ -167,7 +167,7 @@ describe("post router", () => {
 });
 ```
 
-- [ ] **2.3 comment.test.ts**
+- [x] **2.3 comment.test.ts**
 
 ```ts
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
@@ -208,7 +208,7 @@ describe("comment router", () => {
 });
 ```
 
-- [ ] **2.4 (선택) refresh 회전 테스트**
+- [x] **2.4 (선택) refresh 회전 테스트**
 
 ```ts
 // tests/auth/refresh.test.ts
@@ -235,7 +235,7 @@ describe("refresh rotation", () => {
 });
 ```
 
-- [ ] **2.5 실행 + 커밋**
+- [x] **2.5 실행 + 커밋**
 
 ```bash
 pnpm test
@@ -251,7 +251,7 @@ git commit -m "test: post/comment routers + refresh rotation"
 
 ### Steps
 
-- [ ] **3.1 Dockerfile.prod**
+- [x] **3.1 Dockerfile.prod**
 
 ```dockerfile
 # 1) deps — 의존성 캐시 레이어
@@ -290,11 +290,11 @@ HEALTHCHECK --interval=15s --timeout=3s --retries=5 \
 CMD ["node", "server.js"]
 ```
 
-- [ ] **3.2 `.dockerignore` 점검**
+- [x] **3.2 `.dockerignore` 점검**
 
 `node_modules`, `.next`, `.git`, `tests`, `docs`, `coverage`, `Dockerfile*`, `compose*.yml`, `.env`, `.env.*.local`, `.omc` 가 들어있는지 확인. (현재 dev 용으로 작성된 것 그대로 OK)
 
-- [ ] **3.3 커밋**
+- [x] **3.3 커밋**
 
 ```bash
 git add Dockerfile.prod .dockerignore
@@ -309,7 +309,7 @@ git commit -m "build(docker): production multi-stage Dockerfile"
 
 ### Steps
 
-- [ ] **4.1 compose.prod.yml**
+- [x] **4.1 compose.prod.yml**
 
 ```yaml
 # 프로덕션 시뮬레이션 — bind mount 없음, restart:unless-stopped.
@@ -400,7 +400,7 @@ volumes:
   miniodata_prod:
 ```
 
-- [ ] **4.2 커밋**
+- [x] **4.2 커밋**
 
 ```bash
 git add compose.prod.yml
@@ -413,7 +413,7 @@ git commit -m "build(docker): production compose with migrate one-shot"
 
 ### Steps
 
-- [ ] **5.1 prod 이미지 빌드**
+- [x] **5.1 prod 이미지 빌드**
 
 ```bash
 docker compose -f compose.prod.yml build app
@@ -423,7 +423,7 @@ docker images | findstr nextjs-tutorial
 
 목표: 300MB 미만.
 
-- [ ] **5.2 결과가 크다면 점검 포인트**
+- [x] **5.2 결과가 크다면 점검 포인트**
 - `node_modules` 가 runner stage 에 안 들어가는지 (`.next/standalone` 만 사용).
 - `public/` 폴더의 큰 파일 (이 프로젝트는 거의 비어있음 — OK).
 - 추가 dev deps 가 dependencies 에 잘못 들어가지 않았는지 (`package.json` 점검).
@@ -451,7 +451,7 @@ docker compose -f compose.prod.yml ps
 
 > dev 와 prod 가 같은 postgres / minio 볼륨을 공유하면 안 된다. `compose.prod.yml` 의 named volume 이름이 `pgdata_prod`, `miniodata_prod` 로 분리되어 있어 OK.
 
-- [ ] **6.3 커밋**
+- [x] **6.3 커밋**
 
 ```bash
 git add docs/
@@ -464,11 +464,11 @@ git commit -m "docs(milestone10): test + prod docker completion notes"
 
 ## 마일스톤 종료 체크리스트
 
-- [ ] `pnpm test` 전체 통과 (password / jwt / session / schema / presign / post / comment).
+- [x] `pnpm test` 전체 통과 (password / jwt / session / schema / presign / post / comment).
 - [ ] `docker compose -f compose.prod.yml up --build` 정상 기동.
 - [ ] `/api/health` HEALTHCHECK 통과 (`docker compose ps` 의 상태가 `healthy`).
 - [ ] 풀 시나리오(가입→로그인→글→댓글→좋아요→검색) 동작.
-- [ ] 이미지 크기 < 300MB.
+- [ ] 이미지 크기 < 300MB. (실측 351MB — 목표 살짝 초과. node_modules 트리밍 / distroless 베이스로 추후 최적화 여지)
 
 ---
 
