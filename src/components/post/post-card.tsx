@@ -1,13 +1,23 @@
-// 글 카드 — 그리드용 디자인. RSC + 클라이언트 PostLink 조합.
+// 글 카드 — velog 스타일: cover 이미지 + 본문 영역 + 작성자 메타.
 // 학습 포인트:
-//  - line-clamp 로 제목/본문 truncate, Card 로 통일된 톤.
-//  - PostLink 가 View Transitions API 로 카드→상세 모핑을 트리거.
-//  - viewTransitionName 은 post.id 기반으로 카드/상세 양쪽이 일치해야 morph.
+//  - cover 이미지가 있으면 16:9 비율로 상단에 배치, 없으면 카테고리 액센트 bar.
+//  - next/image 의 fill + object-cover 로 어떤 비율의 원본도 일관된 모양으로.
+//  - PostLink 가 View Transitions 로 카드 → 상세 morph (post-<id> 키 일치).
 import Image from "next/image";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { PostLink } from "./post-link";
 import { formatKoDateTime } from "@/lib/format";
+
+// 카테고리별 위쪽 액센트 — 이미지가 없는 카드에 시각적 변화를 주기 위한 미세 장식.
+const categoryAccent: Record<string, string> = {
+  일반: "from-sky-400/70 to-indigo-400/70",
+  학습: "from-emerald-400/70 to-teal-400/70",
+  회고: "from-amber-400/70 to-rose-400/70",
+};
+
+function pickAccent(name?: string | null) {
+  if (name && categoryAccent[name]) return categoryAccent[name];
+  return "from-foreground/30 to-foreground/10";
+}
 
 export function PostCard({
   post,
@@ -22,51 +32,71 @@ export function PostCard({
     excerpt?: string;
     categorySlug?: string | null;
     categoryName?: string | null;
+    coverImageUrl?: string | null;
   };
 }) {
+  const accent = pickAccent(post.categoryName);
+  const hasCover = !!post.coverImageUrl;
   return (
-    <Card className="flex h-full flex-col overflow-hidden p-0 transition hover:shadow-md">
-      <PostLink
-        href={`/posts/${encodeURIComponent(post.slug)}`}
-        viewTransitionName={`post-${post.id}`}
-        className="flex flex-1 flex-col"
-      >
-        <CardContent className="flex flex-1 flex-col gap-3 p-5">
-          {post.categoryName && (
-            <Badge variant="secondary" className="w-fit">
-              📁 {post.categoryName}
-            </Badge>
-          )}
-          <h3 className="line-clamp-2 text-lg font-semibold leading-snug">
-            {post.title}
-          </h3>
-          {post.excerpt && (
-            <p className="line-clamp-3 text-sm text-muted-foreground">
-              {post.excerpt}
-            </p>
-          )}
-        </CardContent>
-      </PostLink>
-      <CardFooter className="border-t p-4">
-        <div className="flex w-full items-center gap-2 text-xs text-muted-foreground">
-          {post.authorAvatarUrl ? (
-            <Image
-              src={post.authorAvatarUrl}
-              width={24}
-              height={24}
-              alt=""
-              unoptimized
-              className="size-6 rounded-full object-cover"
-            />
-          ) : (
-            <div className="size-6 rounded-full bg-muted" />
-          )}
-          <span className="font-medium text-foreground">
-            {post.authorNickname}
-          </span>
-          <time className="ml-auto">{formatKoDateTime(post.createdAt)}</time>
+    <PostLink
+      href={`/posts/${encodeURIComponent(post.slug)}`}
+      viewTransitionName={`post-${post.id}`}
+      className="group relative flex h-full flex-col overflow-hidden border border-border/60 bg-card transition-all duration-300 hover:-translate-y-1 hover:border-foreground/20 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.18)] dark:hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)]"
+    >
+      {hasCover ? (
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+          <Image
+            src={post.coverImageUrl!}
+            alt=""
+            fill
+            unoptimized
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
         </div>
-      </CardFooter>
-    </Card>
+      ) : (
+        <span
+          aria-hidden
+          className={`block h-[3px] w-full bg-gradient-to-r ${accent}`}
+        />
+      )}
+
+      <div className="flex flex-1 flex-col gap-3 p-6">
+        {post.categoryName && (
+          <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            {post.categoryName}
+          </span>
+        )}
+        <h3 className="line-clamp-2 text-xl font-semibold leading-snug tracking-tight transition-colors group-hover:text-foreground">
+          {post.title}
+        </h3>
+        {post.excerpt && (
+          <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+            {post.excerpt}
+          </p>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3 border-t border-border/50 px-6 py-4 text-xs text-muted-foreground">
+        {post.authorAvatarUrl ? (
+          <Image
+            src={post.authorAvatarUrl}
+            width={24}
+            height={24}
+            alt=""
+            unoptimized
+            className="size-6 rounded-full object-cover ring-1 ring-border/60"
+          />
+        ) : (
+          <div className="size-6 rounded-full bg-muted ring-1 ring-border/60" />
+        )}
+        <span className="font-medium text-foreground">
+          {post.authorNickname}
+        </span>
+        <time className="ml-auto tabular-nums">
+          {formatKoDateTime(post.createdAt)}
+        </time>
+      </div>
+    </PostLink>
   );
 }
