@@ -12,9 +12,9 @@
 
 ## 사전 조건
 
-- [ ] M1~M6 완료.
-- [ ] `posts.search_tsv` GENERATED tsvector + GIN 인덱스 존재 (M5 의 마이그레이션 산출물).
-- [ ] `post.list` 가 keyset cursor `{ items, nextCursor }` 형태로 반환 (M5 에서 구현).
+- [x] M1~M6 완료.
+- [x] `posts.search_tsv` GENERATED tsvector + GIN 인덱스 존재 (M5 의 마이그레이션 산출물).
+- [x] `post.list` 가 keyset cursor `{ items, nextCursor }` 형태로 반환 (M5 에서 구현).
 
 ---
 
@@ -57,7 +57,7 @@
 
 ### Steps
 
-- [ ] **1.1 search procedure 추가**
+- [x] **1.1 search procedure 추가**
 
 ```ts
 import { sql } from "drizzle-orm";
@@ -114,11 +114,11 @@ search: publicProcedure
   }),
 ```
 
-- [ ] **1.2 list 반환 형태 점검**
+- [x] **1.2 list 반환 형태 점검**
 
 `post.list` 가 `{ items: [...], nextCursor: string|null }` 형태인지 확인. M5 에서 구현했음. 카드 표시에 필요한 필드(`id, title, slug, createdAt, authorNickname, authorAvatarUrl`) 가 모두 들어있어야 PostFeed 가 그대로 사용 가능. 부족하면 보강.
 
-- [ ] **1.3 커밋**
+- [x] **1.3 커밋**
 
 ```bash
 git add src/server/trpc/routers/post.ts
@@ -133,7 +133,7 @@ git commit -m "feat(post): full-text search procedure with keyset pagination"
 
 ### Steps
 
-- [ ] **2.1 trpc-server.ts**
+- [x] **2.1 trpc-server.ts**
 
 ```ts
 // RSC 에서 prefetch 후 dehydrate 까지 가능한 helpers.
@@ -159,11 +159,11 @@ export async function getTrpcHelpers() {
 }
 ```
 
-- [ ] **2.2 Providers 보정 — HydrationBoundary 호환 확인**
+- [x] **2.2 Providers 보정 — HydrationBoundary 호환 확인**
 
 `src/components/providers.tsx` 가 `QueryClientProvider` 를 그대로 가지고 있다면 충분. HydrationBoundary 는 `@tanstack/react-query` 에서 직접 import.
 
-- [ ] **2.3 커밋**
+- [x] **2.3 커밋**
 
 ```bash
 git add src/lib/trpc-server.ts
@@ -178,7 +178,7 @@ git commit -m "feat(trpc): createServerSideHelpers wrapper for RSC prefetch"
 
 ### Steps
 
-- [ ] **3.1 PostFeedSkeleton**
+- [x] **3.1 PostFeedSkeleton**
 
 ```tsx
 // src/components/post/post-feed-skeleton.tsx
@@ -193,7 +193,7 @@ export function PostFeedSkeleton() {
 }
 ```
 
-- [ ] **3.2 PostFeed**
+- [x] **3.2 PostFeed**
 
 ```tsx
 // src/components/post/post-feed.tsx
@@ -276,7 +276,7 @@ export function PostFeed({ source, initialLimit = 10 }: { source: FeedSource; in
 }
 ```
 
-- [ ] **3.3 커밋**
+- [x] **3.3 커밋**
 
 ```bash
 git add src/components/post/post-feed.tsx src/components/post/post-feed-skeleton.tsx
@@ -291,7 +291,7 @@ git commit -m "feat(feed): PostFeed with useInfiniteQuery + IntersectionObserver
 
 ### Steps
 
-- [ ] **4.1 홈 (`/[locale]`) — list infinite prefetch**
+- [x] **4.1 홈 (`/[locale]`) — list infinite prefetch**
 
 ```tsx
 // src/app/[locale]/(main)/page.tsx
@@ -325,7 +325,7 @@ export default async function HomePage() {
 }
 ```
 
-- [ ] **4.2 search 페이지**
+- [x] **4.2 search 페이지**
 
 ```tsx
 // src/app/[locale]/(main)/search/page.tsx
@@ -365,7 +365,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
 }
 ```
 
-- [ ] **4.3 SearchForm**
+- [x] **4.3 SearchForm**
 
 ```tsx
 // src/components/post/search-form.tsx
@@ -394,7 +394,7 @@ export function SearchForm({ initial }: { initial: string }) {
 }
 ```
 
-- [ ] **4.4 태그 / 카테고리 페이지**
+- [x] **4.4 태그 / 카테고리 페이지**
 
 ```tsx
 // src/app/[locale]/(main)/tags/[slug]/page.tsx
@@ -448,7 +448,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 }
 ```
 
-- [ ] **4.5 커밋**
+- [x] **4.5 커밋**
 
 ```bash
 git add src/app/\[locale\]/\(main\)/page.tsx \
@@ -465,7 +465,7 @@ git commit -m "feat(feed): SSR prefetch + HydrationBoundary on home/tags/categor
 
 ### Steps
 
-- [ ] **5.1 데이터 시드 — 15개 이상 글 작성**
+- [x] **5.1 데이터 시드 — 15개 이상 글 작성**
 
 브라우저에서 직접 또는 SQL 로 빠르게:
 ```sql
@@ -478,7 +478,7 @@ SELECT
 FROM generate_series(1, 20) AS g;
 ```
 
-- [ ] **5.2 시나리오**
+- [x] **5.2 시나리오**
 
 1. `/ko` 진입 → 첫 10개 SSR 노출 → 스크롤 → "더 불러오는 중…" → 추가 노출 → "끝".
 2. `/ko/search?q=본문` → 검색 결과 노출. 다른 키워드는 빈 결과.
@@ -491,10 +491,10 @@ FROM generate_series(1, 20) AS g;
 
 ## 마일스톤 종료 체크리스트
 
-- [ ] `pnpm typecheck` 통과.
-- [ ] 4개 페이지 모두 무한 스크롤 동작.
-- [ ] 검색 결과 정합성 (한국어/영어).
-- [ ] DevTools 에서 prefetch + hydration 패턴 관찰.
+- [x] `pnpm typecheck` 통과.
+- [x] 4개 페이지 모두 무한 스크롤 동작.
+- [x] 검색 결과 정합성 (한국어/영어).
+- [x] DevTools 에서 prefetch + hydration 패턴 관찰.
 
 ---
 
