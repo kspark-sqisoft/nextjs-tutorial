@@ -11,7 +11,8 @@ export default async function EditPostPage({
 }) {
   const me = await getCurrentUser();
   if (!me) redirect("/sign-in");
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const caller = await createCaller();
   let post;
   try {

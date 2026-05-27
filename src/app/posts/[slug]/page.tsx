@@ -14,13 +14,15 @@ export default async function PostPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  // Next.js dev 에서 한글 dynamic param 이 URL-encoded 상태로 도착하는 경우가 있어 직접 decode.
+  // bySlug procedure 가 NFC 정규화까지 처리한다.
+  const slug = decodeURIComponent(rawSlug);
   const caller = await createCaller();
   let post;
   try {
     post = await caller.post.bySlug({ slug });
   } catch (e) {
-    // 학습용 진단 로그 — 정상 404 와 진짜 에러를 구분하기 위해.
     console.error("[posts/[slug]] bySlug failed:", slug, e);
     return notFound();
   }

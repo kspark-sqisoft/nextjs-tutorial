@@ -10,7 +10,8 @@ export default async function TagPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const helpers = await getTrpcHelpers();
   await helpers.post.list.prefetchInfinite({
     limit: 10,
