@@ -1,15 +1,24 @@
-// 홈 — 최근 글 피드 (RSC).
-// 무한 스크롤/검색/Suspense + Hydration 전환은 M7 에서.
+// 홈 — 최근 글 피드 (RSC prefetch + HydrationBoundary).
+// 첫 페이지는 RSC 가 prefetch 해 첫 paint 에 노출, 이후 페이지는 클라이언트의 useInfiniteQuery 가 이어감.
 import Link from "next/link";
+import { Suspense } from "react";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import { getCurrentUser } from "@/server/auth/current-user";
-import { createCaller } from "@/server/trpc/caller";
-import { PostCard } from "@/components/post/post-card";
+import { getTrpcHelpers } from "@/lib/trpc-server";
+import { PostFeed } from "@/components/post/post-feed";
+import { PostFeedSkeleton } from "@/components/post/post-feed-skeleton";
+import { SearchForm } from "@/components/post/search-form";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 
 export default async function HomePage() {
   const me = await getCurrentUser();
-  const caller = await createCaller();
-  const { items } = await caller.post.list({ limit: 10 });
+  const helpers = await getTrpcHelpers();
+  await helpers.post.list.prefetchInfinite({
+    limit: 10,
+    tagSlug: null,
+    categorySlug: null,
+  });
+  const state = dehydrate(helpers.queryClient);
 
   return (
     <main className="mx-auto max-w-3xl p-8">
@@ -48,14 +57,15 @@ export default async function HomePage() {
         </div>
       </header>
 
-      <div className="flex flex-col gap-3">
-        {items.map((p) => (
-          <PostCard key={p.id} post={p} />
-        ))}
-        {!items.length && (
-          <p className="text-sm text-zinc-500">아직 글이 없습니다.</p>
-        )}
+      <div className="mb-6">
+        <SearchForm initial="" />
       </div>
+
+      <HydrationBoundary state={state}>
+        <Suspense fallback={<PostFeedSkeleton />}>
+          <PostFeed source={{ kind: "list" }} />
+        </Suspense>
+      </HydrationBoundary>
     </main>
   );
 }

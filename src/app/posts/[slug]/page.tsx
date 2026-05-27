@@ -33,13 +33,12 @@ export default async function PostPage({
         <h1 className="text-3xl font-semibold">{post.title}</h1>
         <p className="mt-2 text-sm text-zinc-500">
           {post.authorNickname} · {formatKoDateTime(post.createdAt)}
-          {post.categoryName && (
+          {post.categoryName && post.categorySlug && (
             <>
               {" · "}
               <Link
-                href={`/`}
+                href={`/categories/${post.categorySlug}`}
                 className="underline"
-                title="카테고리 페이지는 M7 에서 추가"
               >
                 📁 {post.categoryName}
               </Link>
@@ -49,11 +48,13 @@ export default async function PostPage({
         {post.tags.length > 0 && (
           <ul className="mt-2 flex flex-wrap gap-1 text-xs">
             {post.tags.map((t) => (
-              <li
-                key={t.slug}
-                className="rounded bg-zinc-100 px-2 py-0.5 dark:bg-zinc-900"
-              >
-                #{t.name}
+              <li key={t.slug}>
+                <Link
+                  href={`/tags/${t.slug}`}
+                  className="rounded bg-zinc-100 px-2 py-0.5 hover:underline dark:bg-zinc-900"
+                >
+                  #{t.name}
+                </Link>
               </li>
             ))}
           </ul>
