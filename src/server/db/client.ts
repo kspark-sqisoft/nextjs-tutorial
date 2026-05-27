@@ -9,7 +9,6 @@ import * as schema from "./schema";
 
 declare global {
   // Hot reload 사이에 connection 이 끊기지 않도록 globalThis 캐시.
-  // eslint-disable-next-line no-var
   var __pgClient: ReturnType<typeof postgres> | undefined;
 }
 

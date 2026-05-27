@@ -1,0 +1,20 @@
+{
+  "//1": "Tailwind v4 의 @theme / @plugin / @layer 가 기본 CSS validator 에 unknown 으로 잡히지 않도록.",
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
+
+  "//2": "tsconfig 의 moduleResolution: 'bundler' 를 해석하려면 TS 5.x 가 필요 — VS Code 가 워크스페이스 TS 사용하도록 강제.",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}

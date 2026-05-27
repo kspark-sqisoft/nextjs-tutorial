@@ -7,7 +7,7 @@ import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { TRPCError } from "@trpc/server";
 import { env } from "@/lib/env";
-import { s3, s3Public } from "./s3";
+import { s3Public } from "./s3";
 import { UPLOAD_CONSTRAINTS, type UploadKind } from "./constraints";
 
 const PREFIX: Record<UploadKind, string> = {

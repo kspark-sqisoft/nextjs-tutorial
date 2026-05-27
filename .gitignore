@@ -9,7 +9,10 @@ coverage
 *.log
 .DS_Store
 .idea
-.vscode
+# .vscode — 팀 공유 권장 설정(settings/extensions) 만 트래킹, 나머지는 개인용 제외.
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .pnpm-store
 next-env.d.ts
 tsconfig.tsbuildinfo
