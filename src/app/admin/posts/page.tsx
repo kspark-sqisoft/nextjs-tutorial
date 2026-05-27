@@ -1,6 +1,8 @@
 // /admin/posts — 글 목록 + 숨김/삭제.
 import { createCaller } from "@/server/trpc/caller";
 import { PostRow } from "@/components/admin/post-row";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default async function AdminPostsPage({
   searchParams,
@@ -16,14 +18,14 @@ export default async function AdminPostsPage({
   return (
     <div>
       <h1 className="mb-4 text-xl font-semibold">글</h1>
-      <form className="mb-4 flex gap-2 text-sm">
-        <input
+      <form className="mb-4 flex items-center gap-2">
+        <Input
           name="q"
           defaultValue={sp.q ?? ""}
           placeholder="제목 검색"
-          className="rounded border px-3 py-1"
+          className="max-w-xs"
         />
-        <label className="flex items-center gap-1">
+        <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
             name="onlyHidden"
@@ -32,9 +34,9 @@ export default async function AdminPostsPage({
           />
           숨김만
         </label>
-        <button type="submit" className="rounded border px-3 py-1">
+        <Button type="submit" size="sm">
           검색
-        </button>
+        </Button>
       </form>
       <ul className="flex flex-col divide-y">
         {rows.map((p) => (

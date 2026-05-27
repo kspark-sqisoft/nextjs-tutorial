@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { trpc } from "@/lib/trpc-client";
 import { formatKoDateTime } from "@/lib/format";
+import { Button } from "@/components/ui/button";
 import { CommentForm } from "./comment-form";
 
 export interface CommentDTO {
@@ -72,23 +73,28 @@ export function CommentItem({
           <p className="mt-1 whitespace-pre-wrap text-sm">
             {comment.content}
           </p>
-          <div className="mt-2 flex gap-3 text-xs text-zinc-500">
+          <div className="mt-2 flex gap-2">
             {canPost && comment.parentId === null && (
-              <button
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
                 onClick={() => setReplying((p) => !p)}
-                className="underline"
               >
                 답글
-              </button>
+              </Button>
             )}
             {canDelete && (
-              <button
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
                 onClick={onDelete}
                 disabled={isPending}
-                className="underline"
+                className="text-destructive hover:text-destructive"
               >
                 삭제
-              </button>
+              </Button>
             )}
           </div>
           {replying && (

@@ -4,6 +4,7 @@ import { useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc-client";
+import { Button } from "@/components/ui/button";
 
 interface PostDTO {
   id: string;
@@ -62,20 +63,24 @@ export function PostRow({ post }: { post: PostDTO }) {
           {post.authorNickname} · {post.authorEmail}
         </div>
       </div>
-      <button
+      <Button
+        type="button"
+        size="sm"
+        variant={optimistic ? "default" : "outline"}
         onClick={onToggle}
         disabled={pending || setHidden.isPending}
-        className="rounded border px-3 py-1 text-xs"
       >
-        {optimistic ? "🙈 숨김" : "👀 공개"} (토글)
-      </button>
-      <button
+        {optimistic ? "🙈 숨김" : "👀 공개"}
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant="destructive"
         onClick={onDelete}
         disabled={pending || del.isPending}
-        className="rounded border border-red-300 px-3 py-1 text-xs text-red-700"
       >
         삭제
-      </button>
+      </Button>
     </li>
   );
 }

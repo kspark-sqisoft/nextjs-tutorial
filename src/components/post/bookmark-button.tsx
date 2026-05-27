@@ -4,6 +4,7 @@
 import { useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
+import { Button } from "@/components/ui/button";
 
 export function BookmarkButton({
   postId,
@@ -21,14 +22,12 @@ export function BookmarkButton({
   );
 
   function onClick() {
-    // 더블 클릭 가드 — disabled 의 페인트 지연으로 두 번째 클릭이 새는 것을 막는다.
     if (isPending || toggle.isPending) return;
     const next = !optimistic;
     startTransition(async () => {
       setOptimistic(next);
       try {
         await toggle.mutateAsync({ postId });
-        // router.refresh 가 새 base 를 가져오므로 두 번째 setOptimistic 은 불필요.
         router.refresh();
       } catch {
         // 다음 RSC refresh 가 진실로 덮어쓴다.
@@ -37,12 +36,15 @@ export function BookmarkButton({
   }
 
   return (
-    <button
+    <Button
+      type="button"
+      size="sm"
+      variant={optimistic ? "default" : "outline"}
       onClick={onClick}
       disabled={isPending || toggle.isPending}
-      className="inline-flex items-center gap-1 rounded border px-3 py-1 text-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-900"
     >
-      {optimistic ? "★ 북마크됨" : "☆ 북마크"}
-    </button>
+      <span aria-hidden>{optimistic ? "★" : "☆"}</span>
+      <span>{optimistic ? "북마크됨" : "북마크"}</span>
+    </Button>
   );
 }

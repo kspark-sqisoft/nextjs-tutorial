@@ -4,6 +4,7 @@ import { useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { trpc } from "@/lib/trpc-client";
+import { Button } from "@/components/ui/button";
 
 interface UserDTO {
   id: string;
@@ -65,18 +66,15 @@ export function UserRow({ user }: { user: UserDTO }) {
           미인증
         </span>
       )}
-      <button
+      <Button
+        type="button"
+        size="sm"
+        variant={optimistic ? "outline" : "destructive"}
         onClick={onToggle}
         disabled={pending || setActive.isPending}
-        className={
-          "rounded border px-3 py-1 text-xs " +
-          (optimistic
-            ? "bg-white dark:bg-transparent"
-            : "bg-red-50 text-red-700 dark:bg-red-950")
-        }
       >
-        {optimistic ? "활성" : "비활성"} (토글)
-      </button>
+        {optimistic ? "활성" : "비활성"}
+      </Button>
     </li>
   );
 }

@@ -7,6 +7,7 @@
 import { useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
+import { Button } from "@/components/ui/button";
 
 export function LikeButton({
   postId,
@@ -21,7 +22,6 @@ export function LikeButton({
   const toggle = trpc.like.toggle.useMutation();
   const [isPending, startTransition] = useTransition();
 
-  // 단일 객체로 묶어두면 두 필드를 한 번에 낙관적으로 변경 가능.
   const [optimistic, setOptimistic] = useOptimistic(
     { liked: initialLiked, count: initialCount },
     (state, action: { liked: boolean }) => ({
@@ -31,32 +31,30 @@ export function LikeButton({
   );
 
   function onClick() {
-    // 더블 클릭 가드 — button 의 disabled 는 React 가 다음 페인트에 반영하므로
-    // 빠른 두 번째 클릭이 mutation 을 한 번 더 디스패치할 수 있다.
+    // 더블 클릭 가드 — disabled 의 페인트 지연으로 두 번째 클릭이 새는 것을 막는다.
     if (isPending || toggle.isPending) return;
     const next = !optimistic.liked;
     startTransition(async () => {
       setOptimistic({ liked: next });
       try {
         await toggle.mutateAsync({ postId });
-        // RSC 재실행 → bySlug 다시 fetch → useOptimistic base 갱신.
-        // 두 번째 setOptimistic 으로 다시 sync 하지 않는다:
-        // reducer 가 base 에서 누적 적용되므로 같은 action 을 한 번 더 보내면 count 가 또 ±1 된다.
         router.refresh();
       } catch {
-        // 실패 시 다음 RSC refresh 가 진실로 덮어쓴다.
+        // 다음 RSC refresh 가 진실로 덮어쓴다.
       }
     });
   }
 
   return (
-    <button
+    <Button
+      type="button"
+      size="sm"
+      variant={optimistic.liked ? "default" : "outline"}
       onClick={onClick}
       disabled={isPending || toggle.isPending}
-      className="inline-flex items-center gap-1 rounded border px-3 py-1 text-sm transition hover:bg-zinc-50 dark:hover:bg-zinc-900"
     >
-      <span>{optimistic.liked ? "♥" : "♡"}</span>
-      <span>{optimistic.count}</span>
-    </button>
+      <span aria-hidden>{optimistic.liked ? "♥" : "♡"}</span>
+      <span className="tabular-nums">{optimistic.count}</span>
+    </Button>
   );
 }
