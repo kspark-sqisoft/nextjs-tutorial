@@ -1,0 +1,50 @@
+# 프로덕션 Docker 이미지 — 멀티 stage 빌드.
+# 학습 포인트:
+#  1) deps: 의존성 설치만. 다음 빌드에서 캐시 재사용을 노린다.
+#  2) builder: 소스 + pnpm build (next.config.ts 의 output:'standalone' 이 핵심).
+#  3) runner: 슬림한 최종 이미지. 비루트 사용자(nextjs) + .next/standalone 만.
+# 결과 이미지는 node_modules 전체 대신 standalone 이 추출한 최소 모듈만 포함 → 300MB 이하 목표.
+
+# 1) deps ──────────────────────────────────────────────────────────
+FROM node:22-alpine AS deps
+WORKDIR /app
+# alpine 의 musl 호환을 위한 glibc shim. sharp/argon2 같은 native 모듈에 필요.
+RUN apk add --no-cache libc6-compat \
+  && corepack enable
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# 2) builder ───────────────────────────────────────────────────────
+FROM node:22-alpine AS builder
+WORKDIR /app
+RUN corepack enable
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+# next-intl plugin + standalone 출력. 빌드 산출물은 .next/standalone, .next/static.
+RUN pnpm build
+
+# 3) runner ────────────────────────────────────────────────────────
+FROM node:22-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# 비루트 실행을 위한 시스템 사용자.
+RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
+
+# next/image 등이 참조하는 정적 자산.
+COPY --from=builder /app/public ./public
+# standalone 출력: server.js + 최소 node_modules. 소유권을 비루트 사용자로.
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+ENV PORT=3000 HOSTNAME=0.0.0.0
+
+# wget 은 alpine 기본 포함. /api/health 가 200 만 주면 healthy.
+HEALTHCHECK --interval=15s --timeout=3s --retries=5 \
+  CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
+
+CMD ["node", "server.js"]
