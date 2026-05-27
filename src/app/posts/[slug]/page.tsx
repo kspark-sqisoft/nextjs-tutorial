@@ -7,6 +7,8 @@ import { getCurrentUser } from "@/server/auth/current-user";
 import { LikeButton } from "@/components/post/like-button";
 import { BookmarkButton } from "@/components/post/bookmark-button";
 import { CommentSection } from "@/components/comment/comment-section";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatKoDateTime } from "@/lib/format";
 
 export default async function PostPage({
@@ -15,8 +17,6 @@ export default async function PostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug: rawSlug } = await params;
-  // Next.js dev 에서 한글 dynamic param 이 URL-encoded 상태로 도착하는 경우가 있어 직접 decode.
-  // bySlug procedure 가 NFC 정규화까지 처리한다.
   const slug = decodeURIComponent(rawSlug);
   const caller = await createCaller();
   let post;
@@ -32,39 +32,42 @@ export default async function PostPage({
 
   const html = renderTiptapToSafeHtml(post.contentJson);
   return (
-    <main className="mx-auto max-w-3xl p-8">
-      <header className="mb-6">
-        <h1 className="text-3xl font-semibold">{post.title}</h1>
-        <p className="mt-2 text-sm text-zinc-500">
-          {post.authorNickname} · {formatKoDateTime(post.createdAt)}
-          {post.categoryName && post.categorySlug && (
-            <>
-              {" · "}
-              <Link
-                href={`/categories/${post.categorySlug}`}
-                className="underline"
-              >
-                📁 {post.categoryName}
-              </Link>
-            </>
-          )}
+    <main className="mx-auto max-w-3xl px-6 py-10">
+      {/* 헤더 — velog 톤: 카테고리 뱃지 → 큰 제목 → 메타 한 줄 → 태그 칩 → 액션 */}
+      <header className="mb-10 border-b pb-8">
+        {post.categoryName && post.categorySlug && (
+          <Link
+            href={`/categories/${encodeURIComponent(post.categorySlug)}`}
+            className="mb-3 inline-block"
+          >
+            <Badge variant="secondary">📁 {post.categoryName}</Badge>
+          </Link>
+        )}
+        <h1 className="mb-3 text-3xl font-bold leading-tight md:text-4xl">
+          {post.title}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">
+            {post.authorNickname}
+          </span>
+          {" · "}
+          <time>{formatKoDateTime(post.createdAt)}</time>
         </p>
         {post.tags.length > 0 && (
-          <ul className="mt-2 flex flex-wrap gap-1 text-xs">
+          <ul className="mt-4 flex flex-wrap gap-2">
             {post.tags.map((t) => (
               <li key={t.slug}>
-                <Link
-                  href={`/tags/${t.slug}`}
-                  className="rounded bg-zinc-100 px-2 py-0.5 hover:underline dark:bg-zinc-900"
-                >
-                  #{t.name}
+                <Link href={`/tags/${encodeURIComponent(t.slug)}`}>
+                  <Badge variant="outline" className="hover:bg-muted">
+                    #{t.name}
+                  </Badge>
                 </Link>
               </li>
             ))}
           </ul>
         )}
         {me && (
-          <div className="mt-4 flex gap-2">
+          <div className="mt-6 flex gap-2">
             <LikeButton
               postId={post.id}
               initialLiked={post.liked}
@@ -79,25 +82,26 @@ export default async function PostPage({
       </header>
 
       <article
-        className="prose max-w-none dark:prose-invert"
+        className="prose prose-zinc max-w-none dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: html }}
       />
 
       {post.attachments.length > 0 && (
-        <section className="mt-8 border-t pt-4">
-          <h2 className="mb-2 text-sm font-medium">첨부 파일</h2>
-          <ul className="list-disc pl-5 text-sm">
+        <section className="mt-10 rounded-lg border p-4">
+          <h2 className="mb-3 text-sm font-medium">첨부 파일</h2>
+          <ul className="space-y-1 text-sm">
             {post.attachments.map((a) => (
-              <li key={a.id}>
+              <li key={a.id} className="flex items-center gap-2">
+                <span>📎</span>
                 <a
                   href={a.url}
-                  className="text-blue-600 underline"
+                  className="text-primary underline-offset-2 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   {a.originalName}
-                </a>{" "}
-                <span className="text-xs text-zinc-400">
+                </a>
+                <span className="text-xs text-muted-foreground">
                   ({Math.round(a.sizeBytes / 1024)} KB)
                 </span>
               </li>
@@ -107,9 +111,11 @@ export default async function PostPage({
       )}
 
       {canEdit && (
-        <nav className="mt-8 flex gap-4 text-sm">
-          <Link href={`/posts/${post.slug}/edit`} className="underline">
-            수정
+        <nav className="mt-8 flex gap-2">
+          <Link href={`/posts/${encodeURIComponent(post.slug)}/edit`}>
+            <Button variant="outline" size="sm">
+              수정
+            </Button>
           </Link>
         </nav>
       )}
@@ -118,7 +124,7 @@ export default async function PostPage({
 
       <Link
         href="/"
-        className="mt-8 inline-block text-sm text-zinc-500 underline"
+        className="mt-10 inline-block text-sm text-muted-foreground hover:underline"
       >
         ← 목록으로
       </Link>

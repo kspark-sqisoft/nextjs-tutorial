@@ -68,19 +68,23 @@ export function PostFeed({
   const items = q.data?.pages.flatMap((p) => p.items) ?? [];
 
   return (
-    <div className="flex flex-col gap-3">
-      {items.map((p) => (
-        <PostCard key={p.id} post={p} />
-      ))}
+    <div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((p) => (
+          <PostCard key={p.id} post={p} />
+        ))}
+      </div>
       {!items.length && !q.isLoading && (
-        <p className="text-sm text-zinc-500">결과가 없습니다.</p>
+        <p className="mt-4 text-sm text-muted-foreground">결과가 없습니다.</p>
       )}
       <div ref={sentinel} className="h-6" />
       {q.isFetchingNextPage && (
-        <p className="text-center text-xs text-zinc-400">더 불러오는 중…</p>
+        <p className="text-center text-xs text-muted-foreground">
+          더 불러오는 중…
+        </p>
       )}
       {!q.hasNextPage && items.length > 0 && (
-        <p className="text-center text-xs text-zinc-400">— 끝 —</p>
+        <p className="text-center text-xs text-muted-foreground">— 끝 —</p>
       )}
     </div>
   );

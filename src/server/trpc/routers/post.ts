@@ -83,9 +83,14 @@ export const postRouter = router({
           authorId: posts.authorId,
           authorNickname: users.nickname,
           authorAvatarKey: users.avatarKey,
+          // 카드용 200자 미리보기 + 카테고리 칩.
+          excerpt: sql<string>`substring(${posts.contentText} from 1 for 200)`,
+          categorySlug: categories.slug,
+          categoryName: categories.name,
         })
         .from(posts)
         .innerJoin(users, eq(users.id, posts.authorId))
+        .leftJoin(categories, eq(categories.id, posts.categoryId))
         .where(and(...conditions))
         .orderBy(desc(posts.createdAt), desc(posts.id))
         .limit(input.limit + 1)

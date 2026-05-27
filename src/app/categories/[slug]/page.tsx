@@ -14,17 +14,20 @@ export default async function CategoryPage({
   const slug = decodeURIComponent(rawSlug);
   const helpers = await getTrpcHelpers();
   await helpers.post.list.prefetchInfinite({
-    limit: 10,
+    limit: 12,
     tagSlug: null,
     categorySlug: slug,
   });
   const state = dehydrate(helpers.queryClient);
   return (
-    <main className="mx-auto max-w-3xl p-8">
-      <h1 className="mb-6 text-2xl font-semibold">📁 {slug}</h1>
+    <main className="mx-auto max-w-6xl px-6 py-8">
+      <h1 className="mb-6 text-2xl font-semibold tracking-tight">📁 {slug}</h1>
       <HydrationBoundary state={state}>
         <Suspense fallback={<PostFeedSkeleton />}>
-          <PostFeed source={{ kind: "list", categorySlug: slug }} />
+          <PostFeed
+            source={{ kind: "list", categorySlug: slug }}
+            initialLimit={12}
+          />
         </Suspense>
       </HydrationBoundary>
     </main>

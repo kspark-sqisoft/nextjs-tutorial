@@ -13,23 +13,26 @@ export default async function HomePage() {
   const t = await getTranslations("post");
   const helpers = await getTrpcHelpers();
   await helpers.post.list.prefetchInfinite({
-    limit: 10,
+    limit: 12,
     tagSlug: null,
     categorySlug: null,
   });
   const state = dehydrate(helpers.queryClient);
 
   return (
-    <main className="mx-auto max-w-3xl p-8">
-      <h1 className="mb-6 text-2xl font-semibold">{t("recent")}</h1>
-
-      <div className="mb-6">
-        <SearchForm initial="" />
+    <main className="mx-auto max-w-6xl px-6 py-8">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {t("recent")}
+        </h1>
+        <div className="w-full max-w-md">
+          <SearchForm initial="" />
+        </div>
       </div>
 
       <HydrationBoundary state={state}>
         <Suspense fallback={<PostFeedSkeleton />}>
-          <PostFeed source={{ kind: "list" }} />
+          <PostFeed source={{ kind: "list" }} initialLimit={12} />
         </Suspense>
       </HydrationBoundary>
     </main>
