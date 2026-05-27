@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "home": "홈",
+    "write": "글쓰기",
+    "signIn": "로그인",
+    "signUp": "회원가입",
+    "signOut": "로그아웃",
+    "profile": "프로필",
+    "bookmarks": "북마크",
+    "admin": "Admin"
+  },
+  "post": {
+    "recent": "최근 글",
+    "newPost": "새 글 작성",
+    "save": "저장",
+    "edit": "수정",
+    "delete": "삭제"
+  },
+  "search": {
+    "placeholder": "검색어…",
+    "submit": "검색",
+    "empty": "결과가 없습니다."
+  }
+}

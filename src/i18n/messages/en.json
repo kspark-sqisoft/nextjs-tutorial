@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "home": "Home",
+    "write": "Write",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "profile": "Profile",
+    "bookmarks": "Bookmarks",
+    "admin": "Admin"
+  },
+  "post": {
+    "recent": "Recent posts",
+    "newPost": "New post",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "search": {
+    "placeholder": "Search…",
+    "submit": "Search",
+    "empty": "No results."
+  }
+}

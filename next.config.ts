@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 // Next.js 설정 — 학습용으로 standalone 빌드를 켜 둔다.
 // standalone 출력은 프로덕션 Docker 이미지(마일스톤 10)에서 사용한다.
@@ -28,4 +31,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
