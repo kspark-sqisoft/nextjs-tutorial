@@ -7,6 +7,7 @@ import { postRouter } from "./post";
 import { commentRouter } from "./comment";
 import { likeRouter } from "./like";
 import { bookmarkRouter } from "./bookmark";
+import { adminRouter } from "./admin";
 
 export const appRouter = router({
   health: healthRouter,
@@ -15,6 +16,7 @@ export const appRouter = router({
   comment: commentRouter,
   like: likeRouter,
   bookmark: bookmarkRouter,
+  admin: adminRouter,
 });
 
 // 클라이언트(`@trpc/react-query`) 가 사용할 타입.
