@@ -5,6 +5,8 @@
 import { useOptimistic, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface PendingItem {
   tempId: string;
@@ -52,21 +54,17 @@ export function CommentForm({
   return (
     <div>
       <form onSubmit={onSubmit} className="flex gap-2">
-        <textarea
+        <Textarea
           ref={ref}
           required
           maxLength={1000}
           placeholder="댓글을 남겨주세요"
-          className="flex-1 rounded border px-3 py-2 text-sm"
           rows={2}
+          className="flex-1"
         />
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded bg-zinc-900 px-4 text-sm text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
-        >
+        <Button type="submit" disabled={isPending}>
           작성
-        </button>
+        </Button>
       </form>
       {pending.length > 0 && (
         <ul className="mt-2 space-y-1">

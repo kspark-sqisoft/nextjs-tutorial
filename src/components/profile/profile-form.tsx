@@ -1,20 +1,19 @@
 "use client";
-// 닉네임/소개 수정 폼 — Server Action(updateProfileAction) + useActionState.
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { updateProfileAction } from "@/server/actions/profile";
 import type { ActionState } from "@/server/actions/auth";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 function Submit() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="rounded bg-zinc-900 px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
-    >
+    <Button type="submit" disabled={pending}>
       {pending ? "저장 중..." : "저장"}
-    </button>
+    </Button>
   );
 }
 
@@ -29,33 +28,35 @@ export function ProfileForm({
   );
   return (
     <form action={action} className="flex flex-col gap-3">
-      <label className="text-sm">
-        닉네임
-        <input
+      <div className="grid gap-1.5">
+        <Label htmlFor="nickname">닉네임</Label>
+        <Input
+          id="nickname"
           name="nickname"
           defaultValue={initial.nickname}
           required
           minLength={2}
           maxLength={20}
-          className="mt-1 w-full rounded border px-3 py-2"
         />
-      </label>
-      <label className="text-sm">
-        한 줄 소개
-        <textarea
+      </div>
+      <div className="grid gap-1.5">
+        <Label htmlFor="bio">한 줄 소개</Label>
+        <Textarea
+          id="bio"
           name="bio"
           defaultValue={initial.bio ?? ""}
           maxLength={200}
-          className="mt-1 w-full rounded border px-3 py-2"
           rows={3}
         />
-      </label>
+      </div>
       <div className="flex items-center gap-3">
         <Submit />
         {state && (
           <span
             className={
-              state.ok ? "text-sm text-green-600" : "text-sm text-red-600"
+              state.ok
+                ? "text-sm text-emerald-600"
+                : "text-sm text-destructive"
             }
           >
             {state.message}

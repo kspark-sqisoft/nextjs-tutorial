@@ -1,46 +1,55 @@
 "use client";
+// SignInForm — shadcn 컴포넌트 적용 + i18n.
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { signInAction, type ActionState } from "@/server/actions/auth";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-function SubmitButton() {
+function Submit({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="w-full rounded bg-zinc-900 py-2 text-sm text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
-    >
-      {pending ? "로그인 중..." : "로그인"}
-    </button>
+    <Button type="submit" disabled={pending} className="w-full">
+      {pending ? "..." : label}
+    </Button>
   );
 }
 
 export function SignInForm() {
+  const t = useTranslations("nav");
   const [state, action] = useActionState<ActionState, FormData>(
     signInAction,
     null,
   );
   return (
-    <form action={action} className="flex flex-col gap-3">
-      <input
-        name="email"
-        type="email"
-        required
-        placeholder="이메일"
-        className="rounded border px-3 py-2"
-      />
-      <input
-        name="password"
-        type="password"
-        required
-        placeholder="비밀번호"
-        className="rounded border px-3 py-2"
-      />
-      <SubmitButton />
-      {state && !state.ok && (
-        <p className="text-sm text-red-600">{state.message}</p>
-      )}
-    </form>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("signIn")}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form action={action} className="flex flex-col gap-3">
+          <div className="grid gap-1.5">
+            <Label htmlFor="email">이메일</Label>
+            <Input id="email" name="email" type="email" required />
+          </div>
+          <div className="grid gap-1.5">
+            <Label htmlFor="password">비밀번호</Label>
+            <Input id="password" name="password" type="password" required />
+          </div>
+          <Submit label={t("signIn")} />
+          {state && !state.ok && (
+            <p className="text-sm text-destructive">{state.message}</p>
+          )}
+        </form>
+      </CardContent>
+    </Card>
   );
 }

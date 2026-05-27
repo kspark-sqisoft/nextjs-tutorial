@@ -1,23 +1,20 @@
 "use client";
-// 이메일 존재 여부를 응답으로 노출하지 않으므로(action 측 정책),
-// 사용자에겐 항상 "메일 보냈음(존재한다면)" 같은 메시지가 노출된다.
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import {
   requestPasswordResetAction,
   type ActionState,
 } from "@/server/actions/auth";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
-function SubmitButton() {
+function Submit() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="w-full rounded bg-zinc-900 py-2 text-sm text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
-    >
+    <Button type="submit" disabled={pending} className="w-full">
       {pending ? "발송 중..." : "재설정 메일 받기"}
-    </button>
+    </Button>
   );
 }
 
@@ -28,18 +25,13 @@ export function ForgotPasswordForm() {
   );
   return (
     <form action={action} className="flex flex-col gap-3">
-      <input
-        name="email"
-        type="email"
-        required
-        placeholder="가입한 이메일"
-        className="rounded border px-3 py-2"
-      />
-      <SubmitButton />
+      <div className="grid gap-1.5">
+        <Label htmlFor="email">가입한 이메일</Label>
+        <Input id="email" name="email" type="email" required />
+      </div>
+      <Submit />
       {state && (
-        <p className="text-sm text-zinc-600 dark:text-zinc-300">
-          {state.message}
-        </p>
+        <p className="text-sm text-muted-foreground">{state.message}</p>
       )}
     </form>
   );

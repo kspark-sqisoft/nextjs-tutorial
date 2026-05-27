@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { TiptapEditor } from "@/components/editor/tiptap-editor";
 import { AttachmentList } from "./attachment-list";
 import { trpc } from "@/lib/trpc-client";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export interface PostFormProps {
   mode: "create" | "edit";
@@ -101,20 +103,20 @@ export function PostForm({ mode, initial }: PostFormProps) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <input
+      <Input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="제목"
         required
         maxLength={120}
-        className="rounded border px-3 py-2 text-lg font-semibold"
+        className="text-lg font-semibold"
       />
 
       <div className="flex flex-wrap gap-3">
         <select
           value={categorySlug ?? ""}
           onChange={(e) => setCategorySlug(e.target.value || null)}
-          className="rounded border px-3 py-2"
+          className="rounded border bg-background px-3 py-2 text-sm"
         >
           <option value="">카테고리 없음</option>
           {categories.data?.map((c) => (
@@ -123,11 +125,11 @@ export function PostForm({ mode, initial }: PostFormProps) {
             </option>
           ))}
         </select>
-        <input
+        <Input
           value={tagInput}
           onChange={(e) => setTagInput(e.target.value)}
           placeholder="태그 (쉼표 구분)"
-          className="flex-1 min-w-[150px] rounded border px-3 py-2"
+          className="min-w-[150px] flex-1"
         />
         <label className="flex items-center gap-2 text-sm">
           <input
@@ -147,14 +149,13 @@ export function PostForm({ mode, initial }: PostFormProps) {
       />
 
       <div className="flex items-center gap-3">
-        <button
+        <Button
           type="submit"
           disabled={create.isPending || update.isPending}
-          className="rounded bg-zinc-900 px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
         >
           {create.isPending || update.isPending ? "저장 중..." : "저장"}
-        </button>
-        {error && <span className="text-sm text-red-600">{error}</span>}
+        </Button>
+        {error && <span className="text-sm text-destructive">{error}</span>}
       </div>
     </form>
   );
