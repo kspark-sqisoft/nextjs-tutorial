@@ -38,10 +38,10 @@ export function LikeButton({
     startTransition(async () => {
       setOptimistic({ liked: next });
       try {
-        const r = await toggle.mutateAsync({ postId });
-        // 서버 응답으로 sync — 동시 다발 클릭 시 카운트 정합성 보장.
-        setOptimistic({ liked: r.liked });
+        await toggle.mutateAsync({ postId });
         // RSC 재실행 → bySlug 다시 fetch → useOptimistic base 갱신.
+        // 두 번째 setOptimistic 으로 다시 sync 하지 않는다:
+        // reducer 가 base 에서 누적 적용되므로 같은 action 을 한 번 더 보내면 count 가 또 ±1 된다.
         router.refresh();
       } catch {
         // 실패 시 다음 RSC refresh 가 진실로 덮어쓴다.

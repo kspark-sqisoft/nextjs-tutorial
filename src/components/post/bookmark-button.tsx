@@ -27,8 +27,8 @@ export function BookmarkButton({
     startTransition(async () => {
       setOptimistic(next);
       try {
-        const r = await toggle.mutateAsync({ postId });
-        setOptimistic(r.bookmarked);
+        await toggle.mutateAsync({ postId });
+        // router.refresh 가 새 base 를 가져오므로 두 번째 setOptimistic 은 불필요.
         router.refresh();
       } catch {
         // 다음 RSC refresh 가 진실로 덮어쓴다.
