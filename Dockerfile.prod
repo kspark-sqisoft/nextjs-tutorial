@@ -21,6 +21,20 @@ RUN corepack enable
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# 빌드 시 Next.js 가 라우트 모듈을 import → src/lib/env.ts 의 zod 검증이 즉시 실행된다.
+# 실제 값은 런타임(compose) 에서 env_file 로 주입하므로, 여기서는 형식만 만족하는 placeholder.
+ENV NEXT_PUBLIC_APP_URL=http://localhost:3000 \
+    DATABASE_URL=postgres://placeholder:placeholder@placeholder:5432/placeholder \
+    JWT_ACCESS_SECRET=00000000000000000000000000000000 \
+    JWT_REFRESH_SECRET=00000000000000000000000000000000 \
+    S3_ENDPOINT=http://placeholder:9000 \
+    S3_BUCKET=placeholder \
+    S3_ACCESS_KEY=placeholder \
+    S3_SECRET_KEY=placeholder \
+    S3_PUBLIC_URL=http://localhost:9000 \
+    SMTP_HOST=placeholder \
+    SMTP_PORT=1025 \
+    SMTP_FROM=placeholder
 # next-intl plugin + standalone 출력. 빌드 산출물은 .next/standalone, .next/static.
 RUN pnpm build
 
