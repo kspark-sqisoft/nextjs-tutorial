@@ -34,7 +34,11 @@ export default async function PostPage({
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
       {/* 헤더 — velog 톤: 카테고리 뱃지 → 큰 제목 → 메타 한 줄 → 태그 칩 → 액션 */}
-      <header className="mb-10 border-b pb-8">
+      {/* viewTransitionName 은 카드의 PostLink 와 동일한 키 (`post-<id>`) — 두 페이지 사이 morph. */}
+      <header
+        className="mb-10 border-b pb-8"
+        style={{ viewTransitionName: `post-${post.id}` }}
+      >
         {post.categoryName && post.categorySlug && (
           <Link
             href={`/categories/${encodeURIComponent(post.categorySlug)}`}

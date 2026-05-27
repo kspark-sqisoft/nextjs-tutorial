@@ -1,15 +1,19 @@
-// 글 카드 — 그리드용 디자인. RSC 친화 (클라이언트 코드 없음).
-// 학습 포인트: line-clamp 로 제목/본문 truncate, Card 로 통일된 톤.
-import Link from "next/link";
+// 글 카드 — 그리드용 디자인. RSC + 클라이언트 PostLink 조합.
+// 학습 포인트:
+//  - line-clamp 로 제목/본문 truncate, Card 로 통일된 톤.
+//  - PostLink 가 View Transitions API 로 카드→상세 모핑을 트리거.
+//  - viewTransitionName 은 post.id 기반으로 카드/상세 양쪽이 일치해야 morph.
 import Image from "next/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PostLink } from "./post-link";
 import { formatKoDateTime } from "@/lib/format";
 
 export function PostCard({
   post,
 }: {
   post: {
+    id: string;
     title: string;
     slug: string;
     createdAt: Date;
@@ -22,8 +26,9 @@ export function PostCard({
 }) {
   return (
     <Card className="flex h-full flex-col overflow-hidden p-0 transition hover:shadow-md">
-      <Link
+      <PostLink
         href={`/posts/${encodeURIComponent(post.slug)}`}
+        viewTransitionName={`post-${post.id}`}
         className="flex flex-1 flex-col"
       >
         <CardContent className="flex flex-1 flex-col gap-3 p-5">
@@ -41,7 +46,7 @@ export function PostCard({
             </p>
           )}
         </CardContent>
-      </Link>
+      </PostLink>
       <CardFooter className="border-t p-4">
         <div className="flex w-full items-center gap-2 text-xs text-muted-foreground">
           {post.authorAvatarUrl ? (

@@ -1,68 +1,65 @@
-# M9 — 마감 (shadcn / 다크모드 / i18n / View Transitions) sub-plan
+﻿# M9 ??留덇컧 (shadcn / ?ㅽ겕紐⑤뱶 / i18n / View Transitions) sub-plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: `superpowers:subagent-driven-development` 또는 `superpowers:executing-plans`.
+> **For agentic workers:** REQUIRED SUB-SKILL: `superpowers:subagent-driven-development` ?먮뒗 `superpowers:executing-plans`.
 
-**Goal:** shadcn/ui 정식 도입(주요 컴포넌트 교체), next-themes 다크모드 토글, next-intl 한/영 라우트, 글 목록 ↔ 상세 간 View Transitions 적용. UI 마감.
+**Goal:** shadcn/ui ?뺤떇 ?꾩엯(二쇱슂 而댄룷?뚰듃 援먯껜), next-themes ?ㅽ겕紐⑤뱶 ?좉?, next-intl ?????쇱슦?? 湲 紐⑸줉 ???곸꽭 媛?View Transitions ?곸슜. UI 留덇컧.
 
-**Architecture:** `[locale]` segment + next-intl middleware 가 i18n 라우팅, 인증 middleware 와 한 파일에서 합쳐진다. next-themes 는 `<html class="...">` 토글 + SSR mismatch 회피. View Transitions 는 React 19 의 `unstable_ViewTransition` + Next 15 의 navigation 통합으로 동작.
+**Architecture:** `[locale]` segment + next-intl middleware 媛 i18n ?쇱슦?? ?몄쬆 middleware ? ???뚯씪?먯꽌 ?⑹퀜吏꾨떎. next-themes ??`<html class="...">` ?좉? + SSR mismatch ?뚰뵾. View Transitions ??React 19 ??`unstable_ViewTransition` + Next 15 ??navigation ?듯빀?쇰줈 ?숈옉.
 
-**Tech Stack:** shadcn/ui (Radix 기반), next-themes 0.4+, next-intl 3.25+, React 19 `unstable_ViewTransition`.
-
----
-
-## 사전 조건
-
-- [ ] M1~M8 완료.
-- [ ] `components.json` 존재 (M1 산출물). `tailwind.config.ts`, `globals.css` 가 shadcn 호환 토큰을 받을 준비.
+**Tech Stack:** shadcn/ui (Radix 湲곕컲), next-themes 0.4+, next-intl 3.25+, React 19 `unstable_ViewTransition`.
 
 ---
 
-## 파일 구조
+## ?ъ쟾 議곌굔
+
+- [x] M1~M8 ?꾨즺.
+- [x] `components.json` 議댁옱 (M1 ?곗텧臾?. `tailwind.config.ts`, `globals.css` 媛 shadcn ?명솚 ?좏겙??諛쏆쓣 以鍮?
+
+---
+
+## ?뚯씪 援ъ“
 
 **Modify:**
-- `src/app/globals.css` — shadcn 토큰 + dark variant
-- `src/components/providers.tsx` — ThemeProvider + NextIntlClientProvider 래핑
-- `src/middleware.ts` — next-intl + auth 가드 합치기
-- 기존 form 들(`sign-up-form.tsx`, `sign-in-form.tsx`, `profile-form.tsx`, `post-form.tsx`, `comment-form.tsx`) → shadcn `Input`, `Textarea`, `Button`, `Label`, `Card`, `Form` 활용
+- `src/app/globals.css` ??shadcn ?좏겙 + dark variant
+- `src/components/providers.tsx` ??ThemeProvider + NextIntlClientProvider ?섑븨
+- `src/middleware.ts` ??next-intl + auth 媛???⑹튂湲?- 湲곗〈 form ??`sign-up-form.tsx`, `sign-in-form.tsx`, `profile-form.tsx`, `post-form.tsx`, `comment-form.tsx`) ??shadcn `Input`, `Textarea`, `Button`, `Label`, `Card`, `Form` ?쒖슜
 
 **Create:**
 - `src/i18n/config.ts`, `request.ts`, `routing.ts`
 - `src/i18n/messages/ko.json`, `en.json`
 - `src/components/theme-toggle.tsx`
 - `src/components/language-switcher.tsx`
-- `src/components/header.tsx` — 공통 헤더 (테마 토글 + 언어 토글 + 로그인/로그아웃)
-- `src/components/post/post-link.tsx` — View Transitions 적용한 Link 래퍼
+- `src/components/header.tsx` ??怨듯넻 ?ㅻ뜑 (?뚮쭏 ?좉? + ?몄뼱 ?좉? + 濡쒓렇??濡쒓렇?꾩썐)
+- `src/components/post/post-link.tsx` ??View Transitions ?곸슜??Link ?섑띁
 
 **Run (shadcn add):**
 - `pnpm dlx shadcn@latest add button input textarea label card dialog dropdown-menu form sheet skeleton avatar tabs badge`
 
 ---
 
-## 작업 단위 (Task) 분해
+## ?묒뾽 ?⑥쐞 (Task) 遺꾪빐
 
-총 6 Task.
+珥?6 Task.
 
-- Task 1: shadcn 토큰 + 기본 컴포넌트 add
+- Task 1: shadcn ?좏겙 + 湲곕낯 而댄룷?뚰듃 add
 - Task 2: next-themes Provider + ThemeToggle
-- Task 3: next-intl 설정 + middleware 결합 + 메시지 파일
-- Task 4: Header + LanguageSwitcher + 페이지 마운트
-- Task 5: 기존 폼들 shadcn 컴포넌트로 교체
-- Task 6: View Transitions 적용 + 수동 검증
-
+- Task 3: next-intl ?ㅼ젙 + middleware 寃고빀 + 硫붿떆吏 ?뚯씪
+- Task 4: Header + LanguageSwitcher + ?섏씠吏 留덉슫??- Task 5: 湲곗〈 ?쇰뱾 shadcn 而댄룷?뚰듃濡?援먯껜
+- Task 6: View Transitions ?곸슜 + ?섎룞 寃利?
 ---
 
-## Task 1 — shadcn 토큰 + 컴포넌트 install
+## Task 1 ??shadcn ?좏겙 + 而댄룷?뚰듃 install
 
-**Files:** `src/app/globals.css`(modify), 자동 생성 `src/components/ui/*`
+**Files:** `src/app/globals.css`(modify), ?먮룞 ?앹꽦 `src/components/ui/*`
 
 ### Steps
 
-- [ ] **1.1 globals.css 토큰**
+- [x] **1.1 globals.css ?좏겙**
 
 ```css
 @import "tailwindcss";
 
-/* shadcn/ui new-york + zinc 기본 토큰 */
+/* shadcn/ui new-york + zinc 湲곕낯 ?좏겙 */
 :root {
   --background: 0 0% 100%;
   --foreground: 240 10% 3.9%;
@@ -97,16 +94,16 @@ html, body { height: 100%; }
 body { @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))]; }
 ```
 
-- [ ] **1.2 shadcn 컴포넌트 추가**
+- [x] **1.2 shadcn 而댄룷?뚰듃 異붽?**
 
-호스트에서 (`components.json` 이 이미 있어야 함):
+?몄뒪?몄뿉??(`components.json` ???대? ?덉뼱????:
 ```bash
 pnpm dlx shadcn@latest add button input textarea label card dialog dropdown-menu form sheet skeleton avatar tabs badge
 ```
 
-생성 결과: `src/components/ui/button.tsx`, `input.tsx`, ... 등.
+?앹꽦 寃곌낵: `src/components/ui/button.tsx`, `input.tsx`, ... ??
 
-- [ ] **1.3 커밋**
+- [x] **1.3 而ㅻ컠**
 
 ```bash
 git add src/app/globals.css src/components/ui/
@@ -115,13 +112,13 @@ git commit -m "feat(ui): shadcn tokens + primitive components"
 
 ---
 
-## Task 2 — next-themes + ThemeToggle
+## Task 2 ??next-themes + ThemeToggle
 
 **Files:** `src/components/providers.tsx`(modify), `src/components/theme-toggle.tsx`
 
 ### Steps
 
-- [ ] **2.1 ThemeProvider 추가**
+- [x] **2.1 ThemeProvider 異붽?**
 
 ```tsx
 // src/components/providers.tsx
@@ -144,7 +141,7 @@ export function Providers({ children }: PropsWithChildren) {
 }
 ```
 
-- [ ] **2.2 ThemeToggle**
+- [x] **2.2 ThemeToggle**
 
 ```tsx
 // src/components/theme-toggle.tsx
@@ -161,22 +158,22 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="테마 전환">
+        <Button variant="ghost" size="icon" aria-label="?뚮쭏 ?꾪솚">
           <Sun className="size-4 dark:hidden" />
           <Moon className="hidden size-4 dark:block" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}><Sun className="mr-2 size-4" />라이트</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}><Moon className="mr-2 size-4" />다크</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}><Laptop className="mr-2 size-4" />시스템</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("light")}><Sun className="mr-2 size-4" />?쇱씠??/DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")}><Moon className="mr-2 size-4" />?ㅽ겕</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")}><Laptop className="mr-2 size-4" />?쒖뒪??/DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 ```
 
-- [ ] **2.3 커밋**
+- [x] **2.3 而ㅻ컠**
 
 ```bash
 git add src/components/providers.tsx src/components/theme-toggle.tsx
@@ -185,13 +182,12 @@ git commit -m "feat(ui): next-themes provider + ThemeToggle"
 
 ---
 
-## Task 3 — next-intl 설정 + 메시지 + middleware 합치기
-
+## Task 3 ??next-intl ?ㅼ젙 + 硫붿떆吏 + middleware ?⑹튂湲?
 **Files:** `src/i18n/routing.ts`, `request.ts`, `messages/{ko,en}.json`, `src/middleware.ts`(modify), `src/app/[locale]/layout.tsx`
 
 ### Steps
 
-- [ ] **3.1 routing.ts / request.ts**
+- [x] **3.1 routing.ts / request.ts**
 
 ```ts
 // src/i18n/routing.ts
@@ -219,20 +215,20 @@ export default getRequestConfig(async ({ requestLocale }) => {
 });
 ```
 
-- [ ] **3.2 메시지 파일 (예시 키만)**
+- [x] **3.2 硫붿떆吏 ?뚯씪 (?덉떆 ?ㅻ쭔)**
 
 ```json
 // src/i18n/messages/ko.json
 {
-  "nav": { "home": "홈", "write": "글쓰기", "signIn": "로그인", "signOut": "로그아웃", "bookmarks": "북마크" },
+  "nav": { "home": "??, "write": "湲?곌린", "signIn": "濡쒓렇??, "signOut": "濡쒓렇?꾩썐", "bookmarks": "遺곷쭏?? },
   "auth": {
-    "signUp": "회원가입",
-    "signIn": "로그인",
-    "emailLabel": "이메일",
-    "passwordLabel": "비밀번호",
-    "nicknameLabel": "닉네임"
+    "signUp": "?뚯썝媛??,
+    "signIn": "濡쒓렇??,
+    "emailLabel": "?대찓??,
+    "passwordLabel": "鍮꾨?踰덊샇",
+    "nicknameLabel": "?됰꽕??
   },
-  "post": { "newPost": "새 글 작성", "save": "저장", "recent": "최근 글" }
+  "post": { "newPost": "??湲 ?묒꽦", "save": "???, "recent": "理쒓렐 湲" }
 }
 ```
 
@@ -251,18 +247,18 @@ export default getRequestConfig(async ({ requestLocale }) => {
 }
 ```
 
-- [ ] **3.3 next.config.ts 에 next-intl 플러그인**
+- [x] **3.3 next.config.ts ??next-intl ?뚮윭洹몄씤**
 
 ```ts
 import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
-// 기존 export default withNextIntl(nextConfig) 로 감싼다.
+// 湲곗〈 export default withNextIntl(nextConfig) 濡?媛먯떬??
 export default withNextIntl(nextConfig);
 ```
 
-- [ ] **3.4 middleware 합치기**
+- [x] **3.4 middleware ?⑹튂湲?*
 
 ```ts
 // src/middleware.ts
@@ -294,7 +290,7 @@ export const config = {
 };
 ```
 
-- [ ] **3.5 `app/[locale]/layout.tsx`**
+- [x] **3.5 `app/[locale]/layout.tsx`**
 
 ```tsx
 // src/app/[locale]/layout.tsx
@@ -332,9 +328,9 @@ export default async function LocaleLayout({
 }
 ```
 
-> 기존 루트 `app/layout.tsx` 는 `[locale]/layout.tsx` 가 책임지므로 최소로 둔다 (단순 `{children}` pass-through).
+> 湲곗〈 猷⑦듃 `app/layout.tsx` ??`[locale]/layout.tsx` 媛 梨낆엫吏誘濡?理쒖냼濡??붾떎 (?⑥닚 `{children}` pass-through).
 
-- [ ] **3.6 커밋**
+- [x] **3.6 而ㅻ컠**
 
 ```bash
 git add src/i18n/ src/middleware.ts next.config.ts src/app/\[locale\]/layout.tsx
@@ -343,13 +339,13 @@ git commit -m "feat(i18n): next-intl ko/en routing + middleware merge"
 
 ---
 
-## Task 4 — Header + LanguageSwitcher
+## Task 4 ??Header + LanguageSwitcher
 
 **Files:** `src/components/header.tsx`, `src/components/language-switcher.tsx`
 
 ### Steps
 
-- [ ] **4.1 LanguageSwitcher**
+- [x] **4.1 LanguageSwitcher**
 
 ```tsx
 // src/components/language-switcher.tsx
@@ -376,7 +372,7 @@ export function LanguageSwitcher() {
 }
 ```
 
-- [ ] **4.2 Header (RSC + 클라이언트 자식)**
+- [x] **4.2 Header (RSC + ?대씪?댁뼵???먯떇)**
 
 ```tsx
 // src/components/header.tsx
@@ -394,7 +390,7 @@ export async function Header() {
   return (
     <header className="border-b">
       <nav className="mx-auto flex max-w-5xl items-center gap-4 p-4 text-sm">
-        <Link href="/" className="font-semibold">📒 학습용 블로그</Link>
+        <Link href="/" className="font-semibold">?뱬 ?숈뒿??釉붾줈洹?/Link>
         <Link href="/" className="text-zinc-600 dark:text-zinc-400">{t("home")}</Link>
         {me && <Link href="/posts/new" className="text-zinc-600 dark:text-zinc-400">{t("write")}</Link>}
         {me && <Link href="/me/bookmarks" className="text-zinc-600 dark:text-zinc-400">{t("bookmarks")}</Link>}
@@ -410,9 +406,9 @@ export async function Header() {
 }
 ```
 
-> `Link` href 가 `/` 같은 절대 경로면 next-intl 의 `Link` 또는 `useRouter` 의 자동 locale prefix 가 동작하지 않을 수 있다. 더 안정적으로 하려면 `import { Link } from '@/i18n/navigation'` 패턴을 만들어 쓴다 (next-intl 권장). 학습 단순화로 일단 그대로.
+> `Link` href 媛 `/` 媛숈? ?덈? 寃쎈줈硫?next-intl ??`Link` ?먮뒗 `useRouter` ???먮룞 locale prefix 媛 ?숈옉?섏? ?딆쓣 ???덈떎. ???덉젙?곸쑝濡??섎젮硫?`import { Link } from '@/i18n/navigation'` ?⑦꽩??留뚮뱾???대떎 (next-intl 沅뚯옣). ?숈뒿 ?⑥닚?붾줈 ?쇰떒 洹몃?濡?
 
-- [ ] **4.3 커밋**
+- [x] **4.3 而ㅻ컠**
 
 ```bash
 git add src/components/header.tsx src/components/language-switcher.tsx
@@ -421,13 +417,13 @@ git commit -m "feat(ui): header with theme + language toggles"
 
 ---
 
-## Task 5 — 폼들을 shadcn 컴포넌트로 교체
+## Task 5 ???쇰뱾??shadcn 而댄룷?뚰듃濡?援먯껜
 
 **Files:** `src/components/auth/*`, `src/components/profile/profile-form.tsx`, `src/components/post/post-form.tsx`, `src/components/comment/comment-form.tsx`
 
 ### Steps
 
-- [ ] **5.1 SignInForm 예시 (Input, Button, Label, Card)**
+- [x] **5.1 SignInForm ?덉떆 (Input, Button, Label, Card)**
 
 ```tsx
 "use client";
@@ -470,9 +466,9 @@ export function SignInForm() {
 }
 ```
 
-> 같은 패턴으로 SignUpForm, ProfileForm, CommentForm, PostForm 의 raw `<input>`/`<button>` 을 shadcn `Input`/`Button`/`Textarea`/`Label` 로 교체. PostCard 도 `Card` 로 감싼다.
+> 媛숈? ?⑦꽩?쇰줈 SignUpForm, ProfileForm, CommentForm, PostForm ??raw `<input>`/`<button>` ??shadcn `Input`/`Button`/`Textarea`/`Label` 濡?援먯껜. PostCard ??`Card` 濡?媛먯떬??
 
-- [ ] **5.2 일관성 점검 + 커밋**
+- [x] **5.2 ?쇨????먭? + 而ㅻ컠**
 
 ```bash
 pnpm typecheck
@@ -482,13 +478,13 @@ git commit -m "feat(ui): adopt shadcn primitives across forms and cards"
 
 ---
 
-## Task 6 — View Transitions API
+## Task 6 ??View Transitions API
 
 **Files:** `src/components/post/post-link.tsx`, `src/components/post/post-card.tsx`(modify), `src/app/[locale]/(main)/posts/[slug]/page.tsx`(modify), `src/app/globals.css`(modify)
 
 ### Steps
 
-- [ ] **6.1 globals.css 에 transition CSS**
+- [x] **6.1 globals.css ??transition CSS**
 
 ```css
 @layer base {
@@ -500,7 +496,7 @@ git commit -m "feat(ui): adopt shadcn primitives across forms and cards"
 }
 ```
 
-- [ ] **6.2 PostLink (Link 의 client navigation 후 View Transition 강제)**
+- [x] **6.2 PostLink (Link ??client navigation ??View Transition 媛뺤젣)**
 
 ```tsx
 // src/components/post/post-link.tsx
@@ -509,14 +505,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { startTransition } from "react";
 
-// React 19 의 unstable_ViewTransition 은 두 페이지의 같은 name 으로 layout 을 매칭한다.
-// startViewTransition (Document API) 으로 navigation 을 감싸면 더 직관적.
+// React 19 ??unstable_ViewTransition ? ???섏씠吏??媛숈? name ?쇰줈 layout ??留ㅼ묶?쒕떎.
+// startViewTransition (Document API) ?쇰줈 navigation ??媛먯떥硫???吏곴???
 export function PostLink({ href, viewTransitionName, children, className }: {
   href: string; viewTransitionName: string; children: React.ReactNode; className?: string;
 }) {
   const router = useRouter();
   function onClick(e: React.MouseEvent) {
-    if (!("startViewTransition" in document)) return; // 브라우저 미지원 — 일반 navigation.
+    if (!("startViewTransition" in document)) return; // 釉뚮씪?곗? 誘몄??????쇰컲 navigation.
     e.preventDefault();
     (document as Document & { startViewTransition: (cb: () => void) => void })
       .startViewTransition(() => startTransition(() => router.push(href)));
@@ -529,10 +525,10 @@ export function PostLink({ href, viewTransitionName, children, className }: {
 }
 ```
 
-- [ ] **6.3 PostCard 에 적용**
+- [x] **6.3 PostCard ???곸슜**
 
 ```tsx
-// src/components/post/post-card.tsx 의 Link 를 PostLink 로 교체.
+// src/components/post/post-card.tsx ??Link 瑜?PostLink 濡?援먯껜.
 import { PostLink } from "./post-link";
 
 export function PostCard({ post }: { post: { id: string; title: string; slug: string; createdAt: Date; authorNickname: string; authorAvatarUrl: string | null } }) {
@@ -542,7 +538,7 @@ export function PostCard({ post }: { post: { id: string; title: string; slug: st
       <h3 className="text-lg font-semibold">{post.title}</h3>
       <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
         <span>{post.authorNickname}</span>
-        <span>·</span>
+        <span>쨌</span>
         <time>{new Date(post.createdAt).toLocaleString("ko-KR")}</time>
       </div>
     </PostLink>
@@ -550,16 +546,16 @@ export function PostCard({ post }: { post: { id: string; title: string; slug: st
 }
 ```
 
-- [ ] **6.4 상세 페이지 헤더도 같은 viewTransitionName**
+- [x] **6.4 ?곸꽭 ?섏씠吏 ?ㅻ뜑??媛숈? viewTransitionName**
 
 ```tsx
-// posts/[slug]/page.tsx — header 영역
+// posts/[slug]/page.tsx ??header ?곸뿭
 <header style={{ viewTransitionName: `post-${post.id}` }} className="mb-6">
   ...
 </header>
 ```
 
-- [ ] **6.5 커밋**
+- [x] **6.5 而ㅻ컠**
 
 ```bash
 git add src/components/post/post-link.tsx src/components/post/post-card.tsx \
@@ -569,20 +565,20 @@ git commit -m "feat(ux): View Transitions API on post navigation"
 
 ---
 
-## 마일스톤 종료 체크리스트
-
-- [ ] `pnpm typecheck` 통과.
-- [ ] 다크모드 토글 동작 (light/dark/system).
-- [ ] `/ko/...` ↔ `/en/...` 전환 시 메시지 변경.
-- [ ] 글 카드 → 상세 클릭 시 부드러운 transition (Chromium 계열에서 확인).
-- [ ] 모든 폼이 shadcn 컴포넌트로 통일.
-
----
-
-## 다음 단계
-
-**M10 — 테스트 & 프로덕션 Docker** (`docs/plans/M10-test-prod.md`).
+## 留덉씪?ㅽ넠 醫낅즺 泥댄겕由ъ뒪??
+- [x] `pnpm typecheck` ?듦낵.
+- [x] ?ㅽ겕紐⑤뱶 ?좉? ?숈옉 (light/dark/system).
+- [x] `/ko/...` ??`/en/...` ?꾪솚 ??硫붿떆吏 蹂寃?
+- [x] 湲 移대뱶 ???곸꽭 ?대┃ ??遺?쒕윭??transition (Chromium 怨꾩뿴?먯꽌 ?뺤씤).
+- [x] 紐⑤뱺 ?쇱씠 shadcn 而댄룷?뚰듃濡??듭씪.
 
 ---
 
-문서 끝.
+## ?ㅼ쓬 ?④퀎
+
+**M10 ???뚯뒪??& ?꾨줈?뺤뀡 Docker** (`docs/plans/M10-test-prod.md`).
+
+---
+
+臾몄꽌 ??
+
