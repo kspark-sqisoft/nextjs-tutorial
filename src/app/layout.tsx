@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "@/components/providers";
+import { Header } from "@/components/header";
 
 // 학습용 루트 레이아웃.
 // i18n: cookie 'blog_locale' 로 결정된 locale + messages 를 RSC/클라이언트 양쪽에 공급.
@@ -31,7 +32,10 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body>
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <Providers>{children}</Providers>
+          <Providers>
+            <Header />
+            {children}
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>
