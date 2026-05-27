@@ -995,20 +995,20 @@ SELECT column_name, data_type FROM information_schema.columns WHERE table_name='
 
 ### 작업 체크리스트
 
-- [ ] **next-intl 라우팅**: `[locale]` segment, `locales=['ko','en']`, `defaultLocale='ko'`. 매칭 안 되는 경로는 redirect.
-- [ ] **messages**: 인증/네비/공통 키 30~50개 정의.
-- [ ] **shadcn 컴포넌트 정착**: 기존 raw HTML 폼들을 `Form`, `Input`, `Button`, `Card`, `Dialog` 로 교체.
-- [ ] **테마 토글**: Avatar 옆 `DropdownMenu` 에 light/dark/system 3옵션.
-- [ ] **View Transitions** 적용 예:
+- [x] **next-intl 라우팅**: `[locale]` segment, `locales=['ko','en']`, `defaultLocale='ko'`. 매칭 안 되는 경로는 redirect. (cookie 기반으로 변경)
+- [x] **messages**: 인증/네비/공통 키 30~50개 정의.
+- [x] **shadcn 컴포넌트 정착**: 기존 raw HTML 폼들을 `Form`, `Input`, `Button`, `Card`, `Dialog` 로 교체.
+- [x] **테마 토글**: Avatar 옆 `DropdownMenu` 에 light/dark/system 3옵션.
+- [x] **View Transitions** 적용 예:
   ```tsx
   import { unstable_ViewTransition as ViewTransition } from "react";
   <ViewTransition name={`post-${post.id}`}>
     <Card>...</Card>
   </ViewTransition>;
   ```
-  글 카드와 상세 페이지의 같은 `name` 으로 묶기.
-- [ ] **CSS**: `::view-transition-old(*)` / `::view-transition-new(*)` 기본 트랜지션 학습.
-- [ ] 커밋: `feat(ui): shadcn primitives`, `feat(i18n): next-intl ko/en`, `feat(ui): theme toggle`, `feat(ux): view transitions on post navigation`.
+  글 카드와 상세 페이지의 같은 `name` 으로 묶기. (PostLink + document.startViewTransition 으로 구현)
+- [x] **CSS**: `::view-transition-old(*)` / `::view-transition-new(*)` 기본 트랜지션 학습.
+- [x] 커밋: `feat(ui): shadcn primitives`, `feat(i18n): next-intl ko/en`, `feat(ui): theme toggle`, `feat(ux): view transitions on post navigation`.
 
 ---
 
