@@ -1,17 +1,17 @@
+import Link from "next/link";
 import { SignInForm } from "@/components/auth/sign-in-form";
 
 export default function SignInPage() {
   return (
-    <main className="mx-auto max-w-sm p-8">
-      <h1 className="mb-6 text-2xl font-semibold">로그인</h1>
+    <main className="mx-auto flex min-h-[calc(100vh-200px)] max-w-md flex-col justify-center px-6 py-16">
       <SignInForm />
-      <div className="mt-4 flex justify-between text-xs text-zinc-500">
-        <a href="/sign-up" className="underline">
+      <div className="mt-6 flex justify-between text-sm text-muted-foreground">
+        <Link href="/sign-up" className="hover:text-foreground">
           회원가입
-        </a>
-        <a href="/forgot-password" className="underline">
+        </Link>
+        <Link href="/forgot-password" className="hover:text-foreground">
           비밀번호 찾기
-        </a>
+        </Link>
       </div>
     </main>
   );

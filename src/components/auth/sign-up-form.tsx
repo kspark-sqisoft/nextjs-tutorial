@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -29,12 +30,17 @@ export function SignUpForm() {
     null,
   );
   return (
-    <Card>
+    <Card className="rounded-none border-border/60 shadow-xl ring-1 ring-black/5 dark:ring-white/10">
       <CardHeader>
-        <CardTitle>{t("signUp")}</CardTitle>
+        <CardTitle className="text-2xl tracking-tight">
+          {t("signUp")}
+        </CardTitle>
+        <CardDescription>
+          몇 가지 정보만 입력하면 바로 시작할 수 있습니다.
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={action} className="flex flex-col gap-3">
+        <form action={action} className="flex flex-col gap-4">
           <div className="grid gap-1.5">
             <Label htmlFor="email">이메일</Label>
             <Input id="email" name="email" type="email" required />
