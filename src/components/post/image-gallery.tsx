@@ -108,7 +108,7 @@ export function ImageGallery({
           {items.map((it, idx) => (
             <li
               key={it.url}
-              className="group relative aspect-square overflow-hidden rounded-md border border-border/60 bg-muted"
+              className="group relative aspect-square overflow-hidden border border-border/60 bg-muted"
             >
               <Image
                 src={it.url}
