@@ -70,11 +70,27 @@ export function TiptapEditor({ value, onChange }: TiptapEditorProps) {
       editor.commands.setContent(value as object);
   }, [value, editor]);
 
+  // 박스 빈 영역(padding/여백) 을 클릭해도 본문 끝으로 커서가 이동.
+  // 학습 포인트:
+  //  - mousedown 단계에서 처리 — click 까지 기다리면 blur 가 먼저 일어나 caret 이 사라짐.
+  //  - .ProseMirror 안쪽 클릭은 ProseMirror 자체가 caret 위치를 잡도록 그대로 둔다.
+  //  - 그 외(우리 wrapper, EditorContent wrapper 의 padding 영역) 만 강제 focus end.
+  function onMouseDown(e: React.MouseEvent<HTMLDivElement>) {
+    const target = e.target as HTMLElement;
+    if (target.closest(".ProseMirror")) return;
+    e.preventDefault();
+    editor?.commands.focus("end");
+  }
+
   return (
-    <div className="rounded border p-3">
+    <div
+      className="cursor-text rounded border p-3"
+      onMouseDown={onMouseDown}
+    >
       <EditorContent
         editor={editor}
-        className="prose min-h-[200px] max-w-none dark:prose-invert"
+        // [&_.ProseMirror]:outline-none — 안쪽 contenteditable 의 기본 outline 박스 제거.
+        className="prose min-h-[200px] max-w-none dark:prose-invert [&_.ProseMirror]:outline-none [&_.ProseMirror]:focus:outline-none"
       />
     </div>
   );
