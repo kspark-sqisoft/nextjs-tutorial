@@ -19,7 +19,9 @@ export default async function PostPage({
   let post;
   try {
     post = await caller.post.bySlug({ slug });
-  } catch {
+  } catch (e) {
+    // 학습용 진단 로그 — 정상 404 와 진짜 에러를 구분하기 위해.
+    console.error("[posts/[slug]] bySlug failed:", slug, e);
     return notFound();
   }
   const me = await getCurrentUser();

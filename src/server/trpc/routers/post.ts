@@ -120,7 +120,12 @@ export const postRouter = router({
     }),
 
   bySlug: publicProcedure
-    .input(z.object({ slug: z.string() }))
+    .input(
+      z.object({
+        // 한글 slug 의 NFD/NFC 차이로 DB 매칭이 어긋나는 사고 방지 — NFC 로 정규화.
+        slug: z.string().transform((s) => s.normalize("NFC")),
+      }),
+    )
     .query(async ({ input, ctx }) => {
       const [p] = await db
         .select({
