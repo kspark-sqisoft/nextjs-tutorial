@@ -34,3 +34,19 @@ export const s3Public = new S3Client({
 export function publicUrl(objectKey: string) {
   return `${env.S3_PUBLIC_URL}/${env.S3_BUCKET}/${objectKey}`;
 }
+
+// TipTap 본문에는 작성 당시의 절대 URL 이 그대로 박힌다.
+// 환경(개발용 호스트 변경, 모바일 LAN 접속 등)에 따라 호스트가 달라지므로
+// 렌더 직전에 우리 S3 객체 URL 만 현재 S3_PUBLIC_URL 로 정규화한다.
+// 외부에서 가져온 임의 이미지 src 는 path 패턴이 다르므로 영향받지 않는다.
+export function normalizeS3Url(src: string): string {
+  try {
+    const u = new URL(src);
+    if (u.pathname.startsWith(`/${env.S3_BUCKET}/`)) {
+      return `${env.S3_PUBLIC_URL}${u.pathname}`;
+    }
+    return src;
+  } catch {
+    return src;
+  }
+}

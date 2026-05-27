@@ -5,6 +5,7 @@ import { generateHTML } from "@tiptap/html";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
+import { normalizeS3Url } from "@/server/storage/s3";
 
 // Tiptap 3.x 의 JSONContent 타입은 외부 export 가 패키지별로 다르다.
 // 학습 단순화: 화이트리스트로 필터링한 결과만 generateHTML 에 넘기고 타입은 cast.
@@ -37,6 +38,7 @@ type Node = {
   type?: string;
   content?: Node[];
   marks?: { type?: string }[];
+  attrs?: Record<string, unknown>;
 };
 
 function filter(node: Node): Node | null {
@@ -47,6 +49,11 @@ function filter(node: Node): Node | null {
     next.marks = node.marks.filter(
       (m) => m.type && ALLOWED_MARKS.has(m.type),
     );
+  // 이미지 노드는 attrs.src 호스트를 현재 S3_PUBLIC_URL 로 정규화.
+  // DB 에 박힌 옛 호스트(localhost:9000 등) 이미지가 모바일 등 다른 단말에서도 보이도록.
+  if (node.type === "image" && node.attrs && typeof node.attrs.src === "string") {
+    next.attrs = { ...node.attrs, src: normalizeS3Url(node.attrs.src) };
+  }
   if (node.content)
     next.content = node.content
       .map(filter)

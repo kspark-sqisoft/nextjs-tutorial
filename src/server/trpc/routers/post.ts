@@ -20,7 +20,7 @@ import {
   users,
 } from "@/server/db/schema";
 import { requestUpload } from "@/server/storage/presign";
-import { publicUrl } from "@/server/storage/s3";
+import { normalizeS3Url, publicUrl } from "@/server/storage/s3";
 import { uniquePostSlug } from "@/server/posts/slug";
 import { extractText } from "@/server/posts/extract-text";
 
@@ -119,6 +119,8 @@ export const postRouter = router({
         authorAvatarUrl: r.authorAvatarKey
           ? publicUrl(r.authorAvatarKey)
           : null,
+        // 본문 JSON 에서 추출한 cover src 도 현재 S3_PUBLIC_URL 로 정규화.
+        coverImageUrl: r.coverImageUrl ? normalizeS3Url(r.coverImageUrl) : null,
       }));
       const next = rows[input.limit];
       const nextCursor = next
@@ -509,6 +511,8 @@ export const postRouter = router({
         authorAvatarUrl: r.authorAvatarKey
           ? publicUrl(r.authorAvatarKey)
           : null,
+        // list 와 동일하게 cover src 호스트 정규화.
+        coverImageUrl: r.coverImageUrl ? normalizeS3Url(r.coverImageUrl) : null,
       }));
       const next = rows[input.limit];
       const nextCursor = next

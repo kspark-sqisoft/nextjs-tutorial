@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "http", hostname: "localhost", port: "9000" },
       { protocol: "http", hostname: "minio", port: "9000" },
+      // 같은 Wi-Fi 의 모바일 단말 접속용 — S3_PUBLIC_URL 호스트와 일치시킨다.
+      { protocol: "http", hostname: "192.169.1.86", port: "9000" },
     ],
   },
   experimental: {
