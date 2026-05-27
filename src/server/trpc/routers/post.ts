@@ -85,6 +85,11 @@ export const postRouter = router({
           authorAvatarKey: users.avatarKey,
           // 카드용 200자 미리보기 + 카테고리 칩.
           excerpt: sql<string>`substring(${posts.contentText} from 1 for 200)`,
+          // 본문 content_json 의 첫 image 노드 src 를 추출 — 그리드 카드 cover.
+          // 학습 포인트: jsonb_array_elements 로 배열을 펼친 뒤 type='image' 첫 행의 attrs.src.
+          coverImageUrl: sql<
+            string | null
+          >`(SELECT n->'attrs'->>'src' FROM jsonb_array_elements(${posts.contentJson}->'content') n WHERE n->>'type' = 'image' LIMIT 1)`,
           categorySlug: categories.slug,
           categoryName: categories.name,
         })
@@ -432,11 +437,13 @@ export const postRouter = router({
       };
     }),
 
-  // 전체 검색 — PG Full-text Search.
+  // 전체 검색 — 제목 + 본문 ILIKE 부분 매칭.
   // 학습 포인트:
-  //  - websearch_to_tsquery 는 자연어 문법 ("a b", OR, 따옴표) 지원.
-  //  - 'simple' configuration 은 stemming 없이 토큰화만 — 한/영 혼용에 적합.
-  //  - cursor: base64("rank|createdAtIso|id") 로 (ts_rank desc, createdAt desc, id desc) keyset.
+  //  - ILIKE 는 대소문자 무시 부분 매칭. 한국어처럼 토크나이저가 약한 언어에 단순/유효.
+  //  - 사용자 입력에 %, _ 가 들어가도 안전하도록 escape.
+  //  - cursor: base64("createdAtIso|id") — list 와 동일 패턴.
+  //  - 카드와 동일 schema (excerpt, coverImageUrl, categoryName) 를 반환해
+  //    프론트에서 동일한 PostCard 로 렌더 가능.
   search: publicProcedure
     .input(
       z.object({
@@ -446,54 +453,67 @@ export const postRouter = router({
       }),
     )
     .query(async ({ input }) => {
-      const tsq = sql`websearch_to_tsquery('simple', ${input.q})`;
-      let cursorClause = sql``;
+      // SQL LIKE 특수문자(%, _, \) escape.
+      const escaped = input.q.replace(/[\\%_]/g, (m) => `\\${m}`);
+      const pattern = `%${escaped}%`;
+
+      const conditions = [
+        eq(posts.isHidden, false),
+        eq(posts.isPublished, true),
+        // 제목 OR 본문 텍스트에서 부분 매칭.
+        or(
+          sql`${posts.title} ILIKE ${pattern}`,
+          sql`${posts.contentText} ILIKE ${pattern}`,
+        )!,
+      ];
       if (input.cursor) {
-        const decoded = Buffer.from(input.cursor, "base64").toString(
-          "utf8",
+        const [iso, id] = Buffer.from(input.cursor, "base64")
+          .toString("utf8")
+          .split("|");
+        conditions.push(
+          or(
+            lt(posts.createdAt, new Date(iso!)),
+            and(
+              eq(posts.createdAt, new Date(iso!)),
+              lt(posts.id, id!),
+            )!,
+          )!,
         );
-        const [rank, iso, id] = decoded.split("|");
-        cursorClause = sql`AND (
-          ts_rank(p.search_tsv, ${tsq}), p.created_at, p.id
-        ) < (${Number(rank)}::float4, ${iso}::timestamptz, ${id}::uuid)`;
       }
-      const rows = await db.execute<{
-        id: string;
-        title: string;
-        slug: string;
-        created_at: Date;
-        author_nickname: string;
-        author_avatar_key: string | null;
-        rank: number;
-      }>(sql`
-        SELECT
-          p.id, p.title, p.slug, p.created_at,
-          u.nickname AS author_nickname, u.avatar_key AS author_avatar_key,
-          ts_rank(p.search_tsv, ${tsq}) AS rank
-        FROM posts p
-        INNER JOIN users u ON u.id = p.author_id
-        WHERE p.is_hidden = false
-          AND p.is_published = true
-          AND p.search_tsv @@ ${tsq}
-          ${cursorClause}
-        ORDER BY ts_rank(p.search_tsv, ${tsq}) DESC, p.created_at DESC, p.id DESC
-        LIMIT ${input.limit + 1}
-      `);
-      const arr = Array.from(rows);
-      const items = arr.slice(0, input.limit).map((r) => ({
-        id: r.id,
-        title: r.title,
-        slug: r.slug,
-        createdAt: r.created_at,
-        authorNickname: r.author_nickname,
-        authorAvatarUrl: r.author_avatar_key
-          ? publicUrl(r.author_avatar_key)
+
+      const rows = await db
+        .select({
+          id: posts.id,
+          title: posts.title,
+          slug: posts.slug,
+          createdAt: posts.createdAt,
+          authorId: posts.authorId,
+          authorNickname: users.nickname,
+          authorAvatarKey: users.avatarKey,
+          excerpt: sql<string>`substring(${posts.contentText} from 1 for 200)`,
+          coverImageUrl: sql<
+            string | null
+          >`(SELECT n->'attrs'->>'src' FROM jsonb_array_elements(${posts.contentJson}->'content') n WHERE n->>'type' = 'image' LIMIT 1)`,
+          categorySlug: categories.slug,
+          categoryName: categories.name,
+        })
+        .from(posts)
+        .innerJoin(users, eq(users.id, posts.authorId))
+        .leftJoin(categories, eq(categories.id, posts.categoryId))
+        .where(and(...conditions))
+        .orderBy(desc(posts.createdAt), desc(posts.id))
+        .limit(input.limit + 1);
+
+      const items = rows.slice(0, input.limit).map((r) => ({
+        ...r,
+        authorAvatarUrl: r.authorAvatarKey
+          ? publicUrl(r.authorAvatarKey)
           : null,
       }));
-      const next = arr[input.limit];
+      const next = rows[input.limit];
       const nextCursor = next
         ? Buffer.from(
-            `${next.rank}|${next.created_at.toISOString()}|${next.id}`,
+            `${next.createdAt.toISOString()}|${next.id}`,
           ).toString("base64")
         : null;
       return { items, nextCursor };
