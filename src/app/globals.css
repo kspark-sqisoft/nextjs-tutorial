@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* Tailwind v4 — CSS-first 설정.
    - 폰트: Geist 변수와 연결.

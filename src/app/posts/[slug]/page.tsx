@@ -104,8 +104,14 @@ export default async function PostPage({
         )}
       </header>
 
+      {/* 본문 + 이미지 prose 톤.
+          학습 포인트:
+           - prose-img:my-10 — 이미지 위아래 충분한 여백 (연속 이미지 사이 collapse 되어 자연스러운 간격).
+           - prose-img:rounded-xl — 살짝 둥글게.
+           - prose-img:shadow-md ring-1 — 가벼운 그림자 + 미세한 ring 으로 floating 톤.
+           - prose-img:w-full prose-img:object-cover — 카드 너비에 균일하게. */}
       <article
-        className="prose prose-zinc prose-lg max-w-none dark:prose-invert prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:opacity-80"
+        className="prose prose-zinc prose-lg max-w-none dark:prose-invert prose-headings:tracking-tight prose-a:text-foreground prose-a:underline-offset-4 hover:prose-a:opacity-80 prose-img:my-10 prose-img:w-full prose-img:rounded-xl prose-img:shadow-md prose-img:ring-1 prose-img:ring-black/5 dark:prose-img:ring-white/10 prose-p:leading-relaxed"
         dangerouslySetInnerHTML={{ __html: html }}
       />
 
