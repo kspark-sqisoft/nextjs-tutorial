@@ -29,21 +29,26 @@ export const s3Public = new S3Client({
   credentials,
 });
 
-// 객체 키를 외부 공개 URL 로 변환.
-// dev 에선 minio 가 익명 다운로드 허용이라 그대로 접근 가능.
+// 객체 키를 브라우저용 상대 URL 로 변환.
+// 학습 포인트: 절대 호스트(localhost/LAN IP)를 박지 않는다.
+//   - 'localhost' 는 클라이언트마다 다른 머신을 가리킨다(PC에선 PC, 모바일에선 모바일).
+//   - LAN IP 는 동적 IP 환경에서 수시로 바뀐다.
+// Next 가 자체 호스트로 받아 next.config.ts 의 rewrite 로 MinIO 에 프록시한다.
 export function publicUrl(objectKey: string) {
-  return `${env.S3_PUBLIC_URL}/${env.S3_BUCKET}/${objectKey}`;
+  return `/s3/${objectKey}`;
 }
 
-// TipTap 본문에는 작성 당시의 절대 URL 이 그대로 박힌다.
-// 환경(개발용 호스트 변경, 모바일 LAN 접속 등)에 따라 호스트가 달라지므로
-// 렌더 직전에 우리 S3 객체 URL 만 현재 S3_PUBLIC_URL 로 정규화한다.
-// 외부에서 가져온 임의 이미지 src 는 path 패턴이 다르므로 영향받지 않는다.
+// TipTap 본문의 image 노드에는 작성 당시 절대 URL 이 박힐 수 있다(과거 데이터 호환).
+// 우리 버킷의 객체 URL 만 상대경로(/s3/<key>)로 치환하고, 외부 이미지 src 는 건드리지 않는다.
+//   허용 입력 예) http://localhost:9000/blog/posts/.../a.jpg, http://192.168.x.y:9000/blog/...
 export function normalizeS3Url(src: string): string {
+  // 이미 상대경로면 그대로.
+  if (src.startsWith("/")) return src;
   try {
     const u = new URL(src);
     if (u.pathname.startsWith(`/${env.S3_BUCKET}/`)) {
-      return `${env.S3_PUBLIC_URL}${u.pathname}`;
+      // /blog/<key> → /s3/<key>
+      return `/s3/${u.pathname.slice(env.S3_BUCKET.length + 2)}`;
     }
     return src;
   } catch {
