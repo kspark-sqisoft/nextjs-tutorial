@@ -6,6 +6,7 @@ import { getLocale, getMessages } from "next-intl/server";
 import { Providers } from "@/components/providers";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { ViewTransitionsListener } from "@/components/view-transitions-listener";
 
 // 학습용 루트 레이아웃.
 // 학습 포인트:
@@ -51,6 +52,9 @@ export default async function RootLayout({
       <body className="flex min-h-screen flex-col font-sans antialiased">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <Providers>
+            {/* 뒤로가기/앞으로가기에도 View Transition 을 입힌다.
+                forward 클릭은 <PostLink>, popstate 는 여기서 담당. */}
+            <ViewTransitionsListener />
             <Header />
             {/* flex-1 — 콘텐츠가 짧아도 푸터가 항상 화면 하단에 붙도록. */}
             <div className="flex-1">{children}</div>
