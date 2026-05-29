@@ -13,10 +13,14 @@ export function LikeButton({
   postId,
   initialLiked,
   initialCount,
+  canInteract = true,
 }: {
   postId: string;
   initialLiked: boolean;
   initialCount: number;
+  // 비로그인 사용자도 좋아요 "숫자"는 봐야 하므로 버튼 자체는 항상 렌더링하고,
+  // canInteract=false 일 때만 토글(클릭)을 막는다.
+  canInteract?: boolean;
 }) {
   const router = useRouter();
   const toggle = trpc.like.toggle.useMutation();
@@ -31,6 +35,8 @@ export function LikeButton({
   );
 
   function onClick() {
+    // 비로그인 사용자는 숫자만 보고 토글은 불가.
+    if (!canInteract) return;
     // 더블 클릭 가드 — disabled 의 페인트 지연으로 두 번째 클릭이 새는 것을 막는다.
     if (isPending || toggle.isPending) return;
     const next = !optimistic.liked;
@@ -51,7 +57,12 @@ export function LikeButton({
       size="sm"
       variant={optimistic.liked ? "default" : "outline"}
       onClick={onClick}
-      disabled={isPending || toggle.isPending}
+      // 비로그인 시엔 disabled 로 흐리게 만들지 않는다(숫자 가독성 유지).
+      // 대신 클릭 가드 + aria/cursor 로 "누를 수 없음"만 표현.
+      disabled={canInteract ? isPending || toggle.isPending : undefined}
+      aria-disabled={!canInteract}
+      title={canInteract ? undefined : "로그인 후 좋아요를 누를 수 있어요"}
+      className={canInteract ? undefined : "cursor-not-allowed"}
     >
       <span aria-hidden>{optimistic.liked ? "♥" : "♡"}</span>
       <span className="tabular-nums">{optimistic.count}</span>

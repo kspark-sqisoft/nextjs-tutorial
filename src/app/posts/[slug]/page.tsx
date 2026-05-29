@@ -89,19 +89,23 @@ export default async function PostPage({
           </ul>
         )}
 
-        {me && (
-          <div className="mt-8 flex gap-2">
-            <LikeButton
-              postId={post.id}
-              initialLiked={post.liked}
-              initialCount={post.likeCount}
-            />
+        {/* 좋아요 숫자는 비로그인 사용자에게도 보여야 하므로 항상 렌더링하고,
+            클릭(토글)만 로그인 사용자로 제한한다.
+            북마크는 개인 기능이라 숫자 노출 의미가 없어 로그인 시에만 표시. */}
+        <div className="mt-8 flex gap-2">
+          <LikeButton
+            postId={post.id}
+            initialLiked={post.liked}
+            initialCount={post.likeCount}
+            canInteract={!!me}
+          />
+          {me && (
             <BookmarkButton
               postId={post.id}
               initialBookmarked={post.bookmarked}
             />
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
       {/* 본문 + 이미지 prose 톤.
