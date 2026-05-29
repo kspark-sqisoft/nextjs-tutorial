@@ -50,6 +50,11 @@ export function PostCard({
             alt=""
             fill
             unoptimized
+            // loading="eager" — next/image 기본값 lazy 를 끈다.
+            // 뒤로가기 시 페이지가 리마운트되면 lazy 로딩 사이클이 다시 돌아
+            // "빈 칸 → 페인트" 한 프레임(=깜빡임)이 생긴다. eager 면 캐시(immutable)에서
+            // 즉시 그려져 깜빡임이 사라진다. (본문 이미지는 순수 <img> 라 원래 안 깜빡임)
+            loading="eager"
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
@@ -85,6 +90,8 @@ export function PostCard({
             height={24}
             alt=""
             unoptimized
+            // 커버와 같은 이유로 lazy 끄기 — 리마운트 시 깜빡임 방지.
+            loading="eager"
             className="size-6 rounded-full object-cover ring-1 ring-border/60"
           />
         ) : (

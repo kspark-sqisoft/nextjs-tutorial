@@ -133,6 +133,27 @@ body {
   }
 }
 
+/* 뒤로/앞으로가기(popstate) 전환 튜닝 — 두 가지를 동시에 만족시킨다.
+   ViewTransitionsListener 가 popstate 전환에만 :root[data-popstate-vt] 를 단다.
+
+   ① 공유요소(post-<id>) 위치 morph 제거:
+      리스트에서 한참 스크롤한 뒤 글로 들어갔다 뒤로 오면, 카드↔상세 hero 가 공유하는
+      그룹이 화면을 가로질러 이동(=스크롤처럼 보임)한다. group 의 시간을 0 으로 눌러 즉시 스냅.
+   ② root 크로스페이드는 유지:
+      이 페이드가 DOM 교체 순간의 이미지 재그리기를 가려 "이미지 깜빡임"을 막는다.
+      여기를 0 으로 만들면 깜빡임이 그대로 노출되므로, root 만 페이드 시간을 살려둔다. */
+@layer base {
+  /* 모든 그룹의 위치/크기 morph 제거(스크롤처럼 보이던 이동을 차단). */
+  :root[data-popstate-vt]::view-transition-group(*) {
+    animation-duration: 0s !important;
+  }
+  /* 단, root 의 컨텐츠 크로스페이드는 남겨 이미지 재그리기 깜빡임을 가린다. */
+  :root[data-popstate-vt]::view-transition-old(root),
+  :root[data-popstate-vt]::view-transition-new(root) {
+    animation-duration: 280ms !important;
+  }
+}
+
 /* 스크롤바도 미니멀하게. */
 @layer base {
   ::-webkit-scrollbar {
